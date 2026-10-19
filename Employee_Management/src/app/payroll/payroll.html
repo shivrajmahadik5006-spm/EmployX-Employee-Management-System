@@ -1,0 +1,833 @@
+<div class="payroll-page">
+
+  <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Payroll Management
+      </h1>
+
+      <p>
+        Manage monthly salaries and employee payslips.
+      </p>
+
+    </div>
+
+
+    @if (canManagePayroll) {
+
+      <button
+        type="button"
+        class="primary-btn"
+        (click)="generatePayroll()">
+
+        Save Payroll
+
+      </button>
+
+    }
+
+  </div>
+
+
+  <!-- =====================================================
+       TOOLBAR
+       ===================================================== -->
+
+  <div class="toolbar">
+
+    <div class="month-field">
+
+      <label for="payrollMonth">
+        Payroll month
+      </label>
+
+      <input
+        id="payrollMonth"
+        type="month"
+        [(ngModel)]="selectedMonth"
+        (ngModelChange)="changeMonth()">
+
+    </div>
+
+
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Search employee..."
+      [(ngModel)]="searchText"
+      (ngModelChange)="refreshVisibleRecords()">
+
+  </div>
+
+
+  <!-- =====================================================
+       STATISTICS
+       ===================================================== -->
+
+  <div class="stats-grid">
+
+    <!-- NET PAYROLL -->
+
+    <div class="stat-card">
+
+      <span class="stat-icon blue">
+        ₹
+      </span>
+
+      <div>
+
+        <p>
+
+          @if (
+            isAdmin ||
+            isManager
+          ) {
+
+            Total Net Payroll
+
+          } @else {
+
+            My Net Salary
+
+          }
+
+        </p>
+
+        <h2>
+
+          {{
+            totalPayroll
+              | currency:'INR':'symbol':'1.0-0'
+          }}
+
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <!-- PAID -->
+
+    <div class="stat-card">
+
+      <span class="stat-icon green">
+        ✓
+      </span>
+
+      <div>
+
+        <p>
+          Paid
+        </p>
+
+        <h2>
+          {{ paidCount }}
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <!-- PENDING -->
+
+    <div class="stat-card">
+
+      <span class="stat-icon orange">
+        ◷
+      </span>
+
+      <div>
+
+        <p>
+          Pending
+        </p>
+
+        <h2>
+          {{ pendingCount }}
+        </h2>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       PAYROLL TABLE
+       ===================================================== -->
+
+  <section class="table-card">
+
+    <div class="section-heading">
+
+      <div>
+
+        <h2>
+
+          @if (
+            isAdmin ||
+            isManager
+          ) {
+
+            Employee Payroll
+
+          } @else {
+
+            My Payslips
+
+          }
+
+        </h2>
+
+        <p>
+
+          Salary details for
+          {{ selectedMonth }}
+
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Employee
+            </th>
+
+            <th>
+              Department
+            </th>
+
+            <th>
+              Basic Salary
+            </th>
+
+            <th>
+              Allowances
+            </th>
+
+            <th>
+              Gross Salary
+            </th>
+
+            <th>
+              Deductions
+            </th>
+
+            <th>
+              Net Salary
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Action
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          @for (
+            record of visibleRecords;
+            track record.id
+          ) {
+
+            <tr>
+
+              <!-- EMPLOYEE -->
+
+              <td>
+
+                <div class="employee-name">
+
+                  {{ record.employeeName }}
+
+                </div>
+
+                <div class="employee-email">
+
+                  {{ record.email }}
+
+                </div>
+
+              </td>
+
+
+              <!-- DEPARTMENT -->
+
+              <td>
+
+                {{ record.department }}
+
+              </td>
+
+
+              <!-- BASIC SALARY -->
+
+              <td>
+
+                <span>
+
+                  {{
+                    record.basicSalary
+                      | currency:'INR':'symbol':'1.0-0'
+                  }}
+
+                </span>
+
+              </td>
+
+
+              <!-- ALLOWANCES -->
+
+              <td>
+
+                @if (canManagePayroll) {
+
+                  <input
+                    class="amount-input"
+                    type="number"
+                    min="0"
+                    [(ngModel)]="record.allowances">
+
+                } @else {
+
+                  <span>
+
+                    {{
+                      record.allowances
+                        | currency:'INR':'symbol':'1.0-0'
+                    }}
+
+                  </span>
+
+                }
+
+              </td>
+
+
+              <!-- GROSS SALARY -->
+
+              <td>
+
+                {{
+                  grossSalary(record)
+                    | currency:'INR':'symbol':'1.0-0'
+                }}
+
+              </td>
+
+
+              <!-- DEDUCTIONS -->
+
+              <td>
+
+                <div class="deductions">
+
+                  @if (canManagePayroll) {
+
+                    <label>
+
+                      PF
+
+                      <input
+                        type="number"
+                        min="0"
+                        [(ngModel)]="record.pf">
+
+                    </label>
+
+
+                    <label>
+
+                      Tax
+
+                      <input
+                        type="number"
+                        min="0"
+                        [(ngModel)]="record.tax">
+
+                    </label>
+
+
+                    <label>
+
+                      Other
+
+                      <input
+                        type="number"
+                        min="0"
+                        [(ngModel)]="record.otherDeductions">
+
+                    </label>
+
+
+                    <button
+                      type="button"
+                      class="save-row-btn"
+                      (click)="saveRecord(record)">
+
+                      Save
+
+                    </button>
+
+                  } @else {
+
+                    <span>
+
+                      {{
+                        totalDeductions(record)
+                          | currency:'INR':'symbol':'1.0-0'
+                      }}
+
+                    </span>
+
+                  }
+
+                </div>
+
+              </td>
+
+
+              <!-- NET SALARY -->
+
+              <td class="net-salary">
+
+                {{
+                  netSalary(record)
+                    | currency:'INR':'symbol':'1.0-0'
+                }}
+
+              </td>
+
+
+              <!-- STATUS -->
+
+              <td>
+
+                <span
+                  class="status"
+                  [class.paid]="
+                    record.status === 'Paid'
+                  "
+                  [class.pending]="
+                    record.status === 'Pending'
+                  ">
+
+                  {{ record.status }}
+
+                </span>
+
+              </td>
+
+
+              <!-- ACTIONS -->
+
+              <td>
+
+                <div class="actions">
+
+                  <!-- PAYSLIP -->
+
+                  <button
+                    type="button"
+                    class="view-btn"
+                    (click)="viewPayslip(record)">
+
+                    Payslip
+
+                  </button>
+
+
+                  <!-- MARK PAID -->
+
+                  @if (
+                    canManagePayroll &&
+                    record.status === 'Pending'
+                  ) {
+
+                    <button
+                      type="button"
+                      class="paid-btn"
+                      (click)="markAsPaid(record)">
+
+                      Mark Paid
+
+                    </button>
+
+                  }
+
+
+                  <!-- DELETE -->
+
+                  @if (canManagePayroll) {
+
+                    <button
+                      type="button"
+                      class="delete-btn"
+                      (click)="deletePayroll(record)">
+
+                      Delete
+
+                    </button>
+
+                  }
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          }
+
+
+          <!-- EMPTY -->
+
+          @if (
+            visibleRecords.length === 0
+          ) {
+
+            <tr>
+
+              <td
+                colspan="9"
+                class="empty-state">
+
+                No payroll records found
+                for this month.
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       PAYSLIP MODAL
+       ===================================================== -->
+
+  @if (selectedPayslip) {
+
+    <div class="modal-backdrop">
+
+      <section class="payslip-modal">
+
+
+        <!-- HEADER -->
+
+        <div class="payslip-header">
+
+          <div>
+
+            <h2>
+              Employee Payslip
+            </h2>
+
+            <p>
+              Monthly salary statement
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="close-btn"
+            (click)="closePayslip()">
+
+            ×
+
+          </button>
+
+        </div>
+
+
+        <!-- COMPANY -->
+
+        <div class="company-heading">
+
+          <h2>
+            EmployX
+          </h2>
+
+          <p>
+            Employee Management System
+          </p>
+
+        </div>
+
+
+        <!-- EMPLOYEE INFORMATION -->
+
+        <div class="payslip-info">
+
+          <div>
+
+            <span>
+              Employee Name
+            </span>
+
+            <strong>
+              {{ selectedPayslip.employeeName }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Employee ID
+            </span>
+
+            <strong>
+              {{ selectedPayslip.employeeId }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Department
+            </span>
+
+            <strong>
+              {{ selectedPayslip.department }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Payroll Month
+            </span>
+
+            <strong>
+              {{ selectedPayslip.month }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- SALARY DETAILS -->
+
+        <h3>
+          Salary Details
+        </h3>
+
+
+        <div class="salary-line">
+
+          <span>
+            Basic Salary
+          </span>
+
+          <strong>
+
+            {{
+              selectedPayslip.basicSalary
+                | currency:'INR':'symbol':'1.2-2'
+            }}
+
+          </strong>
+
+        </div>
+
+
+        <div class="salary-line">
+
+          <span>
+            Allowances
+          </span>
+
+          <strong>
+
+            {{
+              selectedPayslip.allowances
+                | currency:'INR':'symbol':'1.2-2'
+            }}
+
+          </strong>
+
+        </div>
+
+
+        <div class="salary-line">
+
+          <span>
+            Gross Salary
+          </span>
+
+          <strong>
+
+            {{
+              grossSalary(selectedPayslip)
+                | currency:'INR':'symbol':'1.2-2'
+            }}
+
+          </strong>
+
+        </div>
+
+
+        <div class="salary-line">
+
+          <span>
+            PF Deduction
+          </span>
+
+          <strong>
+
+            {{
+              selectedPayslip.pf
+                | currency:'INR':'symbol':'1.2-2'
+            }}
+
+          </strong>
+
+        </div>
+
+
+        <div class="salary-line">
+
+          <span>
+            Tax Deduction
+          </span>
+
+          <strong>
+
+            {{
+              selectedPayslip.tax
+                | currency:'INR':'symbol':'1.2-2'
+            }}
+
+          </strong>
+
+        </div>
+
+
+        <div class="salary-line">
+
+          <span>
+            Other Deductions
+          </span>
+
+          <strong>
+
+            {{
+              selectedPayslip.otherDeductions
+                | currency:'INR':'symbol':'1.2-2'
+            }}
+
+          </strong>
+
+        </div>
+
+
+        <div class="salary-line net-line">
+
+          <span>
+            Net Salary
+          </span>
+
+          <strong>
+
+            {{
+              netSalary(selectedPayslip)
+                | currency:'INR':'symbol':'1.2-2'
+            }}
+
+          </strong>
+
+        </div>
+
+
+        <!-- PAYMENT STATUS -->
+
+        <div class="payslip-footer">
+
+          <span>
+            Payment status
+          </span>
+
+          <strong>
+
+            {{ selectedPayslip.status }}
+
+          </strong>
+
+        </div>
+
+
+        <!-- MODAL BUTTONS -->
+
+        <div class="modal-actions no-print">
+
+          <button
+            type="button"
+            class="secondary-btn"
+            (click)="closePayslip()">
+
+            Close
+
+          </button>
+
+
+          <button
+            type="button"
+            class="primary-btn"
+            (click)="printPayslip()">
+
+            Print Payslip
+
+          </button>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  }
+
+</div>

@@ -1,0 +1,501 @@
+<div class="department-page">
+
+  <!-- ============================= -->
+  <!-- PAGE HEADER -->
+  <!-- ============================= -->
+
+  <div class="page-header">
+
+    <div>
+      <h1>Department Management</h1>
+      <p>Manage departments, managers, and budgets.</p>
+    </div>
+
+    <button
+      class="add-button"
+      type="button"
+      (click)="openForm()">
+
+      <span>+</span>
+      Add Department
+
+    </button>
+
+  </div>
+
+
+  <!-- ============================= -->
+  <!-- SUMMARY CARDS -->
+  <!-- ============================= -->
+
+  <div class="summary-grid">
+
+    <!-- Total Departments -->
+    <div class="summary-card">
+
+      <div class="summary-icon blue">
+        ▦
+      </div>
+
+      <div>
+        <p>Total Departments</p>
+
+        <h2>
+          {{ departments.length }}
+        </h2>
+      </div>
+
+    </div>
+
+
+    <!-- Departments -->
+    <div class="summary-card">
+
+      <div class="summary-icon green">
+        ✓
+      </div>
+
+      <div>
+        <p>Departments</p>
+
+        <h2>
+          {{ activeDepartments }}
+        </h2>
+      </div>
+
+    </div>
+
+
+    <!-- Total Employees -->
+    <div class="summary-card">
+
+      <div class="summary-icon purple">
+        ♙
+      </div>
+
+      <div>
+        <p>Total Employees</p>
+
+        <h2>
+          {{ totalEmployees }}
+        </h2>
+      </div>
+
+    </div>
+
+
+    <!-- Total Budget -->
+    <div class="summary-card">
+
+      <div class="summary-icon orange">
+        ₹
+      </div>
+
+      <div>
+        <p>Total Budget</p>
+
+        <h2>
+          {{ totalBudget | currency:'INR':'symbol':'1.0-0' }}
+        </h2>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ============================= -->
+  <!-- LOADING -->
+  <!-- ============================= -->
+
+  @if (loading) {
+
+    <div class="loading-message">
+      Loading departments...
+    </div>
+
+  }
+
+
+  <!-- ============================= -->
+  <!-- ADD / EDIT FORM -->
+  <!-- ============================= -->
+
+  @if (showForm) {
+
+    <div class="form-card">
+
+      <div class="form-header">
+
+        <div>
+
+          <h2>
+            {{ editingId === null
+              ? 'Add New Department'
+              : 'Edit Department'
+            }}
+          </h2>
+
+          <p>
+            Enter the department details below.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="close-button"
+          (click)="cancelForm()">
+
+          ×
+
+        </button>
+
+      </div>
+
+
+      <form
+        (ngSubmit)="saveDepartment()"
+        #departmentForm="ngForm">
+
+
+        <div class="form-grid">
+
+          <!-- ============================= -->
+          <!-- DEPARTMENT NAME -->
+          <!-- ============================= -->
+
+          <div class="form-group">
+
+            <label for="departmentName">
+              Department Name *
+            </label>
+
+            <input
+              id="departmentName"
+              type="text"
+              name="name"
+              [(ngModel)]="form.name"
+              placeholder="e.g. Information Technology"
+              required
+            />
+
+          </div>
+
+
+          <!-- ============================= -->
+          <!-- MANAGER -->
+          <!-- ============================= -->
+
+          <div class="form-group">
+
+            <label for="manager">
+              Department Manager *
+            </label>
+
+            <input
+              id="manager"
+              type="text"
+              name="manager"
+              [(ngModel)]="form.manager"
+              placeholder="Enter manager name"
+              required
+            />
+
+          </div>
+
+
+          <!-- ============================= -->
+          <!-- BUDGET -->
+          <!-- ============================= -->
+
+          <div class="form-group">
+
+            <label for="budget">
+              Department Budget (₹)
+            </label>
+
+            <input
+              id="budget"
+              type="number"
+              name="budget"
+              [(ngModel)]="form.budget"
+              min="0"
+              required
+            />
+
+          </div>
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- FORM ACTIONS -->
+        <!-- ============================= -->
+
+        <div class="form-actions">
+
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="cancelForm()">
+
+            Cancel
+
+          </button>
+
+
+          <button
+            type="submit"
+            class="save-button"
+            [disabled]="departmentForm.invalid">
+
+            {{ editingId === null
+              ? 'Save Department'
+              : 'Update Department'
+            }}
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  }
+
+
+  <!-- ============================= -->
+  <!-- DEPARTMENT TABLE -->
+  <!-- ============================= -->
+
+  <!-- ============================= -->
+<!-- DEPARTMENT MANAGER -->
+<!-- ============================= -->
+
+<div class="form-group">
+
+  <label for="manager">
+    Department Manager *
+  </label>
+
+  <select
+    id="manager"
+    name="manager"
+    [(ngModel)]="form.manager"
+    required>
+
+    <option
+      value=""
+      disabled>
+      Select Manager
+    </option>
+
+    @for (
+      manager of managers;
+      track manager.id
+    ) {
+
+      <option
+        [value]="manager.name">
+
+        {{ manager.name }}
+        -
+        {{ manager.position }}
+
+      </option>
+
+    }
+
+  </select>
+
+</div>
+
+    <!-- ============================= -->
+    <!-- TABLE -->
+    <!-- ============================= -->
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Department
+            </th>
+
+            <th>
+              Department Manager
+            </th>
+
+            <th>
+              Employees
+            </th>
+
+            <th>
+              Budget
+            </th>
+
+            <th>
+              Actions
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          @for (
+            department of filteredDepartments;
+            track department.id
+          ) {
+
+            <tr>
+
+              <!-- ============================= -->
+              <!-- DEPARTMENT -->
+              <!-- ============================= -->
+
+              <td>
+
+                <div class="department-name">
+                  {{ department.name }}
+                </div>
+
+                <div class="department-id">
+                  DEPT-{{ department.id }}
+                </div>
+
+              </td>
+
+
+              <!-- ============================= -->
+              <!-- MANAGER -->
+              <!-- ============================= -->
+
+              <td>
+
+                {{ department.manager || 'Not Assigned' }}
+
+              </td>
+
+
+              <!-- ============================= -->
+              <!-- EMPLOYEES -->
+              <!-- ============================= -->
+
+              <td>
+
+                <span class="employee-count">
+
+                  {{ getEmployeeCount(department) }}
+
+                </span>
+
+              </td>
+
+
+              <!-- ============================= -->
+              <!-- BUDGET -->
+              <!-- ============================= -->
+
+              <td>
+
+                {{ department.budget |
+                   currency:'INR':'symbol':'1.0-0' }}
+
+              </td>
+
+
+              <!-- ============================= -->
+              <!-- ACTIONS -->
+              <!-- ============================= -->
+
+              <td>
+
+                <div class="action-buttons">
+
+
+                  <!-- EDIT -->
+
+                  <button
+                    type="button"
+                    class="edit-button"
+                    (click)="editDepartment(department)"
+                    title="Edit department">
+
+                    Edit
+
+                  </button>
+
+
+                  <!-- DELETE -->
+
+                  <button
+                    type="button"
+                    class="delete-button"
+                    (click)="deleteDepartment(department.id)"
+                    title="Delete department">
+
+                    Delete
+
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          }
+
+
+          <!-- ============================= -->
+          <!-- EMPTY -->
+          <!-- ============================= -->
+
+          @empty {
+
+            <tr>
+
+              <td
+                colspan="5"
+                class="empty-message">
+
+                No departments found.
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- TABLE FOOTER -->
+    <!-- ============================= -->
+
+    <div class="table-footer">
+
+      Showing
+      {{ filteredDepartments.length }}
+      of
+      {{ departments.length }}
+      departments
+
+    </div>
+
+  </div>

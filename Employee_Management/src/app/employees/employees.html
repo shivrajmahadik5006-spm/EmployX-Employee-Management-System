@@ -1,0 +1,738 @@
+<div class="employees-page">
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+
+    <div>
+
+      <p class="eyebrow">
+        EMPLOYEE MANAGEMENT
+      </p>
+
+      <h1>
+        Employees
+      </h1>
+
+      <p class="subtitle">
+        Manage your organization's employees.
+      </p>
+
+    </div>
+
+    <button
+      class="primary-btn"
+      type="button"
+      (click)="openAddForm()">
+
+      + Add Employee
+
+    </button>
+
+  </header>
+
+
+  <!-- STATISTICS -->
+  <section class="stats-grid">
+
+    <article class="stat-card">
+
+      <span class="stat-icon blue">
+        👥
+      </span>
+
+      <div>
+
+        <p>
+          Total Employees
+        </p>
+
+        <h2>
+          {{ totalEmployees }}
+        </h2>
+
+      </div>
+
+    </article>
+
+
+    <article class="stat-card">
+
+      <span class="stat-icon green">
+        ✓
+      </span>
+
+      <div>
+
+        <p>
+          Active Employees
+        </p>
+
+        <h2>
+          {{ activeEmployees }}
+        </h2>
+
+      </div>
+
+    </article>
+
+
+    <article class="stat-card">
+
+      <span class="stat-icon orange">
+        ○
+      </span>
+
+      <div>
+
+        <p>
+          Inactive Employees
+        </p>
+
+        <h2>
+          {{ inactiveEmployees }}
+        </h2>
+
+      </div>
+
+    </article>
+
+  </section>
+
+
+  <!-- ADD / EDIT FORM -->
+  @if (showForm) {
+
+    <section class="form-card">
+
+      <h2>
+        {{
+          editingId === null
+            ? 'Add Employee'
+            : 'Edit Employee'
+        }}
+      </h2>
+
+
+      <form
+        #employeeForm="ngForm"
+        (ngSubmit)="saveEmployee()">
+
+
+        <div class="form-grid">
+
+
+          <!-- NAME -->
+          <div class="form-group">
+
+            <label for="name">
+              Full Name *
+            </label>
+
+            <input
+              id="name"
+              name="name"
+              type="text"
+              [(ngModel)]="form.name"
+              placeholder="Enter full name"
+              required />
+
+          </div>
+
+
+          <!-- EMAIL -->
+          <div class="form-group">
+
+            <label for="email">
+              Email *
+            </label>
+
+            <input
+              id="email"
+              name="email"
+              type="email"
+              [(ngModel)]="form.email"
+              placeholder="name@example.com"
+              required />
+
+          </div>
+
+
+          <!-- PHONE -->
+          <div class="form-group">
+
+            <label for="phone">
+              Phone
+            </label>
+
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              [(ngModel)]="form.phone"
+              placeholder="Phone number" />
+
+          </div>
+
+
+          <!-- DEPARTMENT -->
+          <div class="form-group">
+
+            <label for="departmentId">
+              Department *
+            </label>
+
+            <select
+              id="departmentId"
+              name="departmentId"
+              [(ngModel)]="form.departmentId"
+              required>
+
+              <option
+                [ngValue]="0">
+
+                Select Department
+
+              </option>
+
+
+              @for (
+                department of departments;
+                track department.id
+              ) {
+
+                <option
+                  [ngValue]="department.id">
+
+                  {{ department.name }}
+
+                </option>
+
+              }
+
+            </select>
+
+          </div>
+
+
+          <!-- POSITION -->
+          <div class="form-group">
+
+            <label for="position">
+              Position *
+            </label>
+
+            <input
+              id="position"
+              name="position"
+              type="text"
+              [(ngModel)]="form.position"
+              placeholder="Job position"
+              required />
+
+          </div>
+
+
+          <!-- SALARY -->
+          <div class="form-group">
+
+            <label for="salary">
+              Salary (₹)
+            </label>
+
+            <input
+              id="salary"
+              name="salary"
+              type="number"
+              [(ngModel)]="form.salary"
+              min="0"
+              required />
+
+          </div>
+
+
+          <!-- JOINING DATE -->
+          <div class="form-group">
+
+            <label for="joiningDate">
+              Joining Date
+            </label>
+
+            <input
+              id="joiningDate"
+              name="joiningDate"
+              type="date"
+              [(ngModel)]="form.joiningDate"
+              required />
+
+          </div>
+
+
+          <!-- STATUS -->
+          <div class="form-group">
+
+            <label for="status">
+              Status
+            </label>
+
+            <select
+              id="status"
+              name="status"
+              [(ngModel)]="form.status">
+
+              <option value="Active">
+                Active
+              </option>
+
+              <option value="Inactive">
+                Inactive
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- PASSWORD -->
+          @if (editingId === null) {
+
+            <div class="form-group">
+
+              <label for="password">
+                Password *
+              </label>
+
+              <div class="password-input-wrapper">
+
+                <input
+                  id="password"
+                  name="password"
+                  [type]="
+                    showPassword
+                      ? 'text'
+                      : 'password'
+                  "
+                  [(ngModel)]="form.password"
+                  placeholder="Enter login password"
+                  minlength="6"
+                  required />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="
+                    showPassword =
+                      !showPassword
+                  ">
+
+                  {{
+                    showPassword
+                      ? 'Hide'
+                      : 'Show'
+                  }}
+
+                </button>
+
+              </div>
+
+              <small>
+                Minimum 6 characters.
+              </small>
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="form-group">
+
+              <label for="confirmPassword">
+                Confirm Password *
+              </label>
+
+              <div class="password-input-wrapper">
+
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  [type]="
+                    showConfirmPassword
+                      ? 'text'
+                      : 'password'
+                  "
+                  [(ngModel)]="form.confirmPassword"
+                  placeholder="Confirm login password"
+                  minlength="6"
+                  required />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="
+                    showConfirmPassword =
+                      !showConfirmPassword
+                  ">
+
+                  {{
+                    showConfirmPassword
+                      ? 'Hide'
+                      : 'Show'
+                  }}
+
+                </button>
+
+              </div>
+
+
+              @if (
+                form.confirmPassword &&
+                form.password !==
+                form.confirmPassword
+              ) {
+
+                <small class="password-error">
+
+                  Passwords do not match.
+
+                </small>
+
+              }
+
+              @if (
+                form.confirmPassword &&
+                form.password ===
+                form.confirmPassword
+              ) {
+
+                <small class="password-success">
+
+                  Passwords match.
+
+                </small>
+
+              }
+
+            </div>
+
+          }
+
+
+        </div>
+
+
+        <!-- FORM BUTTONS -->
+        <div class="form-actions">
+
+          <button
+            type="button"
+            class="secondary-btn"
+            (click)="cancelForm()">
+
+            Cancel
+
+          </button>
+
+
+          <button
+            type="submit"
+            class="primary-btn"
+            [disabled]="
+              employeeForm.invalid ||
+              (
+                editingId === null &&
+                form.password !==
+                form.confirmPassword
+              )
+            ">
+
+            {{
+              editingId === null
+                ? 'Add Employee'
+                : 'Save Changes'
+            }}
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </section>
+
+  }
+
+
+  <!-- EMPLOYEE DIRECTORY -->
+  <section class="table-card">
+
+
+    <!-- TABLE HEADER -->
+    <div class="table-header">
+
+      <div>
+
+        <h2>
+          Employee Directory
+        </h2>
+
+        <p>
+          View, search and manage employees.
+        </p>
+
+      </div>
+
+
+     <input
+      class="search-input"
+      type="search"
+      name="searchText"
+      [(ngModel)]="searchText"
+      (ngModelChange)="onSearch()"
+      placeholder="Search employees..." />
+
+    </div>
+
+
+    <!-- TABLE -->
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              EMPLOYEE
+            </th>
+
+            <th>
+              CONTACT
+            </th>
+
+            <th>
+              DEPARTMENT
+            </th>
+
+            <th>
+              POSITION
+            </th>
+
+            <th>
+              SALARY
+            </th>
+
+            <th>
+              STATUS
+            </th>
+
+            <th>
+              ACTIONS
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          @for (
+            employee of filteredEmployees;
+            track employee.id
+          ) {
+
+            <tr>
+
+
+              <!-- EMPLOYEE -->
+              <td>
+
+                <div class="employee-name">
+
+                  <span class="avatar">
+
+                    {{
+                      employee.name
+                        .charAt(0)
+                        .toUpperCase()
+                    }}
+
+                  </span>
+
+                  <div>
+
+                    <strong>
+                      {{ employee.name }}
+                    </strong>
+
+                    <small>
+                      EMP-{{ employee.id }}
+                    </small>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+
+              <!-- CONTACT -->
+              <td>
+
+                <span>
+                  {{ employee.email }}
+                </span>
+
+                <small class="secondary-text">
+
+                  {{
+                    employee.phone ||
+                    'No phone'
+                  }}
+
+                </small>
+
+              </td>
+
+
+              <!-- DEPARTMENT -->
+              <td>
+
+                {{
+                  employee.department?.name ||
+                  'No Department'
+                }}
+
+              </td>
+
+
+              <!-- POSITION -->
+              <td>
+
+                {{ employee.position }}
+
+              </td>
+
+
+              <!-- SALARY -->
+              <td>
+
+                {{
+                  employee.salary
+                    | currency:'INR':'symbol':'1.0-0'
+                }}
+
+              </td>
+
+
+              <!-- STATUS -->
+              <td>
+
+                <span
+                  class="status"
+                  [class.active]="
+                    employee.status === 'Active'
+                  "
+                  [class.inactive]="
+                    employee.status === 'Inactive'
+                  ">
+
+                  {{ employee.status }}
+
+                </span>
+
+              </td>
+
+
+              <!-- ACTIONS -->
+              <td>
+
+                <div class="actions">
+
+
+                  <button
+                    type="button"
+                    class="edit-btn"
+                    (click)="
+                      editEmployee(employee)
+                    ">
+
+                    Edit
+
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="status-btn"
+                    (click)="
+                      toggleStatus(employee)
+                    ">
+
+                    {{
+                      employee.status === 'Active'
+                        ? 'Deactivate'
+                        : 'Activate'
+                    }}
+
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="delete-btn"
+                    (click)="
+                      deleteEmployee(employee)
+                    ">
+
+                    Delete
+
+                  </button>
+
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          }
+
+
+          @empty {
+
+            <tr>
+
+              <td
+                colspan="7"
+                class="empty-state">
+
+                No employees found.
+                Try another search or add an employee.
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <!-- FOOTER -->
+    <footer class="table-footer">
+
+      Showing
+      {{ filteredEmployees.length }}
+      of
+      {{ totalEmployees }}
+      employees
+
+    </footer>
+
+  </section>
+
+</div>

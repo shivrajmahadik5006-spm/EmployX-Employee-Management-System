@@ -1,0 +1,804 @@
+<div class="performance-page">
+
+  <!-- ================================================= -->
+  <!-- HEADER -->
+  <!-- ================================================= -->
+
+  <div class="page-header">
+
+    <div>
+      <h1>Performance Management</h1>
+
+      <p>
+        Track and manage employee performance reviews.
+      </p>
+    </div>
+
+
+    @if (canManage) {
+
+      <button
+        type="button"
+        class="primary-btn"
+        (click)="openCreateForm()">
+
+        + Add Performance Review
+
+      </button>
+
+    }
+
+  </div>
+
+
+  <!-- ================================================= -->
+  <!-- STATISTICS -->
+  <!-- ================================================= -->
+
+  <div class="stats-grid">
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        👥
+      </div>
+
+      <div>
+
+        <p>Total Reviews</p>
+
+        <h2>
+          {{ visibleReviews.length }}
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        ⭐
+      </div>
+
+      <div>
+
+        <p>Average Rating</p>
+
+        <h2>
+          {{ averageRating }}
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        📋
+      </div>
+
+      <div>
+
+        <p>Reviews Available</p>
+
+        <h2>
+          {{ publishedCount }}
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        📊
+      </div>
+
+      <div>
+
+        <p>Draft Reviews</p>
+
+        <h2>
+          {{ draftCount }}
+        </h2>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+  <!-- ================================================= -->
+  <!-- SEARCH -->
+  <!-- ================================================= -->
+
+  <div class="toolbar">
+
+    <div class="search-box">
+
+      <span class="search-icon">
+        🔍
+      </span>
+
+      <input
+        type="text"
+        name="search"
+        [(ngModel)]="searchText"
+        placeholder="Search employee, department, review period..."
+        aria-label="Search performance reviews" />
+
+    </div>
+
+  </div>
+
+
+  <!-- ================================================= -->
+  <!-- REVIEWS -->
+  <!-- ================================================= -->
+
+  @if (visibleReviews.length > 0) {
+
+    <div class="reviews-grid">
+
+
+      @for (
+        review of visibleReviews;
+        track review.id
+      ) {
+
+
+        <div class="review-card">
+
+
+          <!-- ========================================= -->
+          <!-- EMPLOYEE HEADER -->
+          <!-- ========================================= -->
+
+          <div class="review-header">
+
+
+            <div class="employee-info">
+
+
+              <div class="employee-avatar">
+
+                {{
+                  review.employeeName
+                    .charAt(0)
+                    .toUpperCase()
+                }}
+
+              </div>
+
+
+              <div>
+
+                <h3>
+                  {{ review.employeeName }}
+                </h3>
+
+                <p>
+                  {{ review.employeeEmail }}
+                </p>
+
+              </div>
+
+
+            </div>
+
+
+            <div class="rating-box">
+
+              <span>
+                ★
+              </span>
+
+              <strong>
+                {{ review.rating }}/5
+              </strong>
+
+            </div>
+
+
+          </div>
+
+
+          <!-- ========================================= -->
+          <!-- REVIEW INFORMATION -->
+          <!-- ========================================= -->
+
+          <div class="review-meta">
+
+
+            <div class="meta-item">
+
+              <span class="meta-label">
+                Department
+              </span>
+
+              <span class="meta-value">
+                {{ review.department }}
+              </span>
+
+            </div>
+
+
+            <div class="meta-item">
+
+              <span class="meta-label">
+                Review Period
+              </span>
+
+              <span class="meta-value">
+                {{ review.reviewPeriod }}
+              </span>
+
+            </div>
+
+
+            <div class="meta-item">
+
+              <span class="meta-label">
+                Review Date
+              </span>
+
+              <span class="meta-value">
+
+                {{
+                  review.createdAt
+                    | date:'dd MMM yyyy'
+                }}
+
+              </span>
+
+            </div>
+
+
+            <div class="meta-item">
+
+              <span class="meta-label">
+                Reviewed By
+              </span>
+
+              <span class="meta-value">
+                {{ review.reviewer }}
+              </span>
+
+            </div>
+
+
+          </div>
+
+
+          <!-- ========================================= -->
+          <!-- STRENGTHS -->
+          <!-- ========================================= -->
+
+          <div class="review-section">
+
+            <h4>
+              Strengths & Achievements
+            </h4>
+
+            <p>
+              {{
+                review.achievements ||
+                'No information provided.'
+              }}
+            </p>
+
+          </div>
+
+
+          <!-- ========================================= -->
+          <!-- GOALS -->
+          <!-- ========================================= -->
+
+          <div class="review-section">
+
+            <h4>
+              Areas for Improvement & Goals
+            </h4>
+
+            <p>
+              {{
+                review.goals ||
+                'No information provided.'
+              }}
+            </p>
+
+          </div>
+
+
+          <!-- ========================================= -->
+          <!-- FEEDBACK -->
+          <!-- ========================================= -->
+
+          <div class="review-section">
+
+            <h4>
+              Reviewer Feedback
+            </h4>
+
+            <p>
+              {{
+                review.feedback ||
+                'No feedback provided.'
+              }}
+            </p>
+
+          </div>
+
+
+          <!-- ========================================= -->
+          <!-- ACTIONS -->
+          <!-- ========================================= -->
+
+          @if (canManage) {
+
+            <div class="review-actions">
+
+
+              <button
+                type="button"
+                class="edit-btn"
+                (click)="editReview(review)">
+
+                ✏️ Edit
+
+              </button>
+
+
+              <button
+                type="button"
+                class="delete-btn"
+                (click)="deleteReview(review)">
+
+                🗑️ Delete
+
+              </button>
+
+
+            </div>
+
+          }
+
+
+        </div>
+
+
+      }
+
+
+    </div>
+
+  }
+
+
+  <!-- ================================================= -->
+  <!-- EMPTY STATE -->
+  <!-- ================================================= -->
+
+  @else {
+
+
+    <div class="empty-state">
+
+
+      <div class="empty-icon">
+        📊
+      </div>
+
+
+      <h2>
+        No Performance Reviews Found
+      </h2>
+
+
+      @if (searchText) {
+
+
+        <p>
+          No reviews match
+          "{{ searchText }}".
+        </p>
+
+
+        <button
+          type="button"
+          class="secondary-btn"
+          (click)="searchText = ''">
+
+          Clear Search
+
+        </button>
+
+
+      }
+
+      @else {
+
+
+        <p>
+          There are no performance reviews available yet.
+        </p>
+
+
+        @if (canManage) {
+
+
+          <button
+            type="button"
+            class="primary-btn"
+            (click)="openCreateForm()">
+
+            + Add First Review
+
+          </button>
+
+
+        }
+
+
+      }
+
+
+    </div>
+
+
+  }
+
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- CREATE / EDIT MODAL -->
+<!-- ===================================================== -->
+
+@if (showForm) {
+
+
+  <div
+    class="modal-overlay"
+    (click)="closeForm()">
+
+
+    <div
+      class="modal-container"
+      (click)="$event.stopPropagation()">
+
+
+      <!-- =============================================== -->
+      <!-- MODAL HEADER -->
+      <!-- =============================================== -->
+
+      <div class="modal-header">
+
+
+        <div>
+
+
+          @if (editingId !== null) {
+
+            <h2>
+              Edit Performance Review
+            </h2>
+
+          }
+
+          @else {
+
+            <h2>
+              Add Performance Review
+            </h2>
+
+          }
+
+
+          <p>
+            Enter the employee performance details.
+          </p>
+
+
+        </div>
+
+
+        <button
+          type="button"
+          class="close-btn"
+          (click)="closeForm()">
+
+          ×
+
+        </button>
+
+
+      </div>
+
+
+      <!-- =============================================== -->
+      <!-- FORM -->
+      <!-- =============================================== -->
+
+      <form
+        class="performance-form"
+        (ngSubmit)="saveReview()">
+
+
+        <!-- EMPLOYEE -->
+
+        <div class="form-group">
+
+
+          <label for="employee">
+
+            Employee
+
+            <span class="required">
+              *
+            </span>
+
+          </label>
+
+
+          <select
+            id="employee"
+            name="employee"
+            [(ngModel)]="formEmployeeId"
+            required>
+
+
+            <option
+              [ngValue]="0"
+              disabled>
+
+              Select Employee
+
+            </option>
+
+
+            @for (
+              employee of employees;
+              track employee.id
+            ) {
+
+
+              <option
+                [ngValue]="employee.id">
+
+                {{ employee.name }}
+
+                -
+
+                {{ getDepartmentName(employee) }}
+
+              </option>
+
+
+            }
+
+
+          </select>
+
+
+        </div>
+
+
+        <!-- REVIEW PERIOD -->
+
+        <div class="form-group">
+
+
+          <label for="reviewPeriod">
+
+            Review Period
+
+            <span class="required">
+              *
+            </span>
+
+          </label>
+
+
+          <input
+            id="reviewPeriod"
+            name="reviewPeriod"
+            type="text"
+            [(ngModel)]="formPeriod"
+            placeholder="Example: Q3 2026"
+            required />
+
+
+        </div>
+
+
+        <!-- RATING -->
+
+        <div class="form-group">
+
+
+          <label for="rating">
+
+            Performance Rating
+
+            <span class="required">
+              *
+            </span>
+
+          </label>
+
+
+          <select
+            id="rating"
+            name="rating"
+            [(ngModel)]="formRating"
+            required>
+
+
+            <option [ngValue]="1">
+              1 - Needs Improvement
+            </option>
+
+
+            <option [ngValue]="2">
+              2 - Below Expectations
+            </option>
+
+
+            <option [ngValue]="3">
+              3 - Meets Expectations
+            </option>
+
+
+            <option [ngValue]="4">
+              4 - Exceeds Expectations
+            </option>
+
+
+            <option [ngValue]="5">
+              5 - Outstanding
+            </option>
+
+
+          </select>
+
+
+        </div>
+
+
+        <!-- STRENGTHS -->
+
+        <div class="form-group">
+
+
+          <label for="achievements">
+
+            Strengths & Achievements
+
+          </label>
+
+
+          <textarea
+            id="achievements"
+            name="achievements"
+            [(ngModel)]="formAchievements"
+            rows="4"
+            placeholder="Enter employee strengths and achievements...">
+          </textarea>
+
+
+        </div>
+
+
+        <!-- GOALS -->
+
+        <div class="form-group">
+
+
+          <label for="goals">
+
+            Areas for Improvement & Goals
+
+          </label>
+
+
+          <textarea
+            id="goals"
+            name="goals"
+            [(ngModel)]="formGoals"
+            rows="4"
+            placeholder="Enter areas for improvement and future goals...">
+          </textarea>
+
+
+        </div>
+
+
+        <!-- FEEDBACK -->
+
+        <div class="form-group">
+
+
+          <label for="feedback">
+
+            Reviewer Feedback
+
+            <span class="required">
+              *
+            </span>
+
+          </label>
+
+
+          <textarea
+            id="feedback"
+            name="feedback"
+            [(ngModel)]="formFeedback"
+            rows="5"
+            placeholder="Enter reviewer feedback..."
+            required>
+          </textarea>
+
+
+        </div>
+
+
+        <!-- FORM BUTTONS -->
+
+        <div class="form-actions">
+
+
+          <button
+            type="button"
+            class="cancel-btn"
+            (click)="closeForm()">
+
+            Cancel
+
+          </button>
+
+
+          <button
+            type="submit"
+            class="primary-btn">
+
+
+            @if (editingId !== null) {
+
+              Update Review
+
+            }
+
+            @else {
+
+              Save Review
+
+            }
+
+
+          </button>
+
+
+        </div>
+
+
+      </form>
+
+
+    </div>
+
+
+  </div>
+
+
+}

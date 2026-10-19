@@ -1,0 +1,551 @@
+<div class="announcements-page">
+
+  <!-- ========================================= -->
+  <!-- PAGE HEADER -->
+  <!-- ========================================= -->
+
+  <div class="page-header">
+
+    <div class="header-content">
+
+      <div class="header-icon">
+        📢
+      </div>
+
+      <div>
+        <h1>Announcements</h1>
+        <p>Stay updated with the latest company announcements.</p>
+      </div>
+
+    </div>
+
+    <button
+      type="button"
+      class="create-btn"
+      *ngIf="isAdmin"
+      (click)="openCreateModal()">
+
+      <span class="plus-icon">+</span>
+      Create Announcement
+
+    </button>
+
+  </div>
+
+
+  <!-- ========================================= -->
+  <!-- FILTER SECTION -->
+  <!-- ========================================= -->
+
+  <div class="filter-section">
+
+    <div class="search-box">
+
+      <span class="search-icon">🔍</span>
+
+      <input
+        type="text"
+        [(ngModel)]="searchText"
+        (input)="applyFilters()"
+        placeholder="Search announcements..."
+      />
+
+      <button
+        type="button"
+        class="clear-search"
+        *ngIf="searchText"
+        (click)="clearFilters()">
+
+        ×
+
+      </button>
+
+    </div>
+
+
+    <div class="category-box">
+
+      <label for="categoryFilter">
+        Category
+      </label>
+
+      <select
+        id="categoryFilter"
+        [(ngModel)]="selectedCategory"
+        (change)="applyFilters()">
+
+        <option value="All">
+          All Categories
+        </option>
+
+        <option
+          *ngFor="let category of categories"
+          [value]="category">
+
+          {{ category }}
+
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <!-- ========================================= -->
+  <!-- SUMMARY -->
+  <!-- ========================================= -->
+
+  <div class="announcement-summary">
+
+    <div class="summary-left">
+
+      <div class="summary-icon">
+        📢
+      </div>
+
+      <div>
+
+        <strong>
+          {{ filteredAnnouncements.length }}
+        </strong>
+
+        <span>
+          {{
+            filteredAnnouncements.length === 1
+              ? 'Announcement'
+              : 'Announcements'
+          }}
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary-right">
+
+      <span
+        *ngIf="searchText || selectedCategory !== 'All'"
+        class="filter-status">
+
+        Filtered results
+
+      </span>
+
+      <span
+        *ngIf="!searchText && selectedCategory === 'All'"
+        class="total-status">
+
+        All announcements
+
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- ========================================= -->
+  <!-- ANNOUNCEMENTS LIST -->
+  <!-- ========================================= -->
+
+  <div class="announcement-list">
+
+    <div
+      class="announcement-card"
+      *ngFor="let item of filteredAnnouncements; trackBy: trackByAnnouncementId">
+
+
+      <!-- CARD HEADER -->
+
+      <div class="card-header">
+
+        <div class="card-title-section">
+
+          <div class="announcement-title-row">
+
+            <span class="category-badge">
+              {{ item.category }}
+            </span>
+
+            <span
+              class="status-badge"
+              [class.inactive]="!item.isActive">
+
+              <span class="status-dot"></span>
+
+              {{ item.isActive ? 'Active' : 'Inactive' }}
+
+            </span>
+
+          </div>
+
+          <h3>
+            {{ item.title }}
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      <!-- MESSAGE -->
+
+      <div class="announcement-message">
+
+        <p>
+          {{ item.description }}
+        </p>
+
+      </div>
+
+
+      <!-- FOOTER -->
+
+      <div class="card-footer">
+
+        <div class="announcement-info">
+
+          <span class="info-item">
+
+            <span class="info-icon">👤</span>
+
+            <span>
+              {{ item.author }}
+            </span>
+
+          </span>
+
+
+          <span class="info-item">
+
+            <span class="info-icon">📅</span>
+
+            <span>
+              {{ item.createdAt | date:'dd MMM yyyy' }}
+            </span>
+
+          </span>
+
+
+          <span
+            class="info-item"
+            *ngIf="item.expiryDate">
+
+            <span class="info-icon">⏳</span>
+
+            <span>
+              Expires:
+              {{ item.expiryDate | date:'dd MMM yyyy' }}
+            </span>
+
+          </span>
+
+        </div>
+
+
+        <!-- ADMIN ACTIONS -->
+
+        <div
+          class="admin-actions"
+          *ngIf="isAdmin">
+
+          <button
+            type="button"
+            class="edit-btn"
+            (click)="openEditModal(item)">
+
+            ✏️ Edit
+
+          </button>
+
+          <button
+            type="button"
+            class="delete-btn"
+            (click)="deleteAnnouncement(item.id)">
+
+            🗑️ Delete
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- EMPTY STATE -->
+    <!-- ========================================= -->
+
+    <div
+      class="empty-state"
+      *ngIf="filteredAnnouncements.length === 0">
+
+      <div class="empty-icon">
+        📢
+      </div>
+
+      <h3>
+        No announcements found
+      </h3>
+
+      <p *ngIf="searchText || selectedCategory !== 'All'">
+
+        Try changing your search or category filter.
+
+      </p>
+
+      <p *ngIf="!searchText && selectedCategory === 'All'">
+
+        There are currently no announcements available.
+
+      </p>
+
+      <button
+        type="button"
+        class="clear-filter-btn"
+        *ngIf="searchText || selectedCategory !== 'All'"
+        (click)="clearFilters()">
+
+        Clear Filters
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- CREATE / EDIT MODAL -->
+<!-- ================================================= -->
+
+<div
+  class="modal-overlay"
+  *ngIf="showModal"
+  (click)="closeModal()">
+
+  <div
+    class="modal"
+    (click)="$event.stopPropagation()">
+
+
+    <!-- MODAL HEADER -->
+
+    <div class="modal-header">
+
+      <div class="modal-title">
+
+        <div class="modal-icon">
+
+          {{ editingAnnouncement ? '✏️' : '📢' }}
+
+        </div>
+
+        <div>
+
+          <h2>
+
+            {{
+              editingAnnouncement
+                ? 'Edit Announcement'
+                : 'Create Announcement'
+            }}
+
+          </h2>
+
+          <p>
+
+            {{
+              editingAnnouncement
+                ? 'Update announcement details'
+                : 'Create a new company announcement'
+            }}
+
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="close-btn"
+        (click)="closeModal()">
+
+        ×
+
+      </button>
+
+    </div>
+
+
+    <!-- MODAL BODY -->
+
+    <div class="modal-body">
+
+
+      <!-- TITLE -->
+
+      <div class="form-group">
+
+        <label for="announcement-title">
+
+          Announcement Title
+          <span>*</span>
+
+        </label>
+
+        <input
+          id="announcement-title"
+          type="text"
+          [(ngModel)]="formData.title"
+          placeholder="Enter announcement title"
+        />
+
+      </div>
+
+
+      <!-- CATEGORY + EXPIRY -->
+
+      <div class="form-row">
+
+        <div class="form-group">
+
+          <label for="announcement-category">
+
+            Category
+            <span>*</span>
+
+          </label>
+
+          <select
+            id="announcement-category"
+            [(ngModel)]="formData.category">
+
+            <option
+              *ngFor="let category of categories"
+              [value]="category">
+
+              {{ category }}
+
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="announcement-expiry">
+
+            Expiry Date
+
+          </label>
+
+          <input
+            id="announcement-expiry"
+            type="date"
+            [(ngModel)]="formData.expiryDate"
+          />
+
+        </div>
+
+      </div>
+
+
+      <!-- MESSAGE -->
+
+      <div class="form-group">
+
+        <label for="announcement-message">
+
+          Message
+          <span>*</span>
+
+        </label>
+
+        <textarea
+          id="announcement-message"
+          [(ngModel)]="formData.description"
+          rows="6"
+          placeholder="Enter announcement message">
+        </textarea>
+
+      </div>
+
+
+      <!-- ACTIVE -->
+
+      <div class="active-option">
+
+        <label class="checkbox-label">
+
+          <input
+            type="checkbox"
+            [(ngModel)]="formData.isActive"
+          />
+
+          <span class="checkbox-text">
+
+            <strong>
+              Active Announcement
+            </strong>
+
+            <small>
+              Make this announcement visible to employees.
+            </small>
+
+          </span>
+
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- MODAL FOOTER -->
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="closeModal()">
+
+        Cancel
+
+      </button>
+
+      <button
+        type="button"
+        class="save-btn"
+        (click)="saveAnnouncement()">
+
+        <span>
+          {{ editingAnnouncement ? '✓' : '+' }}
+        </span>
+
+        {{
+          editingAnnouncement
+            ? 'Update Announcement'
+            : 'Create Announcement'
+        }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

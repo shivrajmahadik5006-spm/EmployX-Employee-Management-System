@@ -1,0 +1,404 @@
+<div class="profile-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1>My Profile</h1>
+      <p>Manage your personal information and account settings</p>
+    </div>
+  </div>
+
+
+  <!-- Profile Main Card -->
+  <div class="profile-container">
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+
+      <div class="profile-avatar-section">
+
+        <!-- Profile Photo -->
+        <div class="avatar-wrapper">
+
+          @if (profilePhoto) {
+            <img
+              [src]="profilePhoto"
+              alt="Profile Photo"
+              class="profile-photo"
+            />
+          } @else {
+            <div class="profile-avatar">
+              {{ initials }}
+            </div>
+          }
+
+          <label
+            class="photo-upload"
+            title="Change profile photo"
+          >
+            📷
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onPhotoSelected($event)"
+              hidden
+            />
+          </label>
+
+        </div>
+
+
+        <!-- Profile Name -->
+        <div class="profile-heading">
+
+          <h2>{{ accountName }}</h2>
+
+          <p class="profile-role">
+            {{ roleLabel }}
+          </p>
+
+          <p class="profile-department">
+            {{ accountDepartment }}
+          </p>
+
+          @if (profilePhoto) {
+            <button
+              type="button"
+              class="remove-photo-btn"
+              (click)="removePhoto()"
+            >
+              Remove Photo
+            </button>
+          }
+
+        </div>
+
+      </div>
+
+
+      <!-- Edit Button -->
+      @if (!editMode) {
+
+        <button
+          type="button"
+          class="edit-profile-btn"
+          (click)="startEdit()"
+        >
+          <span>✎</span>
+          Edit Profile
+        </button>
+
+      }
+
+    </div>
+
+
+    <!-- Divider -->
+    <div class="profile-divider"></div>
+
+
+    <!-- Edit Form -->
+    @if (editMode) {
+
+      <div class="edit-section">
+
+        <div class="section-title">
+          <div class="section-icon">✎</div>
+
+          <div>
+            <h3>Edit Profile</h3>
+            <p>Update your personal information</p>
+          </div>
+        </div>
+
+
+        <div class="edit-grid">
+
+          <!-- Name -->
+          <div class="form-group">
+
+            <label>
+              Full Name
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="editName"
+              placeholder="Enter your full name"
+            />
+
+          </div>
+
+
+          <!-- Phone -->
+          <div class="form-group">
+
+            <label>
+              Phone Number
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="editPhone"
+              placeholder="Enter your phone number"
+            />
+
+          </div>
+
+        </div>
+
+
+        <div class="edit-actions">
+
+          <button
+            type="button"
+            class="cancel-btn"
+            (click)="cancelEdit()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="save-btn"
+            (click)="saveProfile()"
+          >
+            Save Changes
+          </button>
+
+        </div>
+
+      </div>
+
+    }
+
+
+    <!-- Account Information -->
+    @if (!editMode) {
+
+      <div class="information-section">
+
+        <div class="section-title">
+
+          <div class="section-icon">
+            👤
+          </div>
+
+          <div>
+            <h3>Personal Information</h3>
+            <p>Your basic employee information</p>
+          </div>
+
+        </div>
+
+
+        <div class="information-grid">
+
+          <!-- Full Name -->
+          <div class="information-item">
+
+            <span class="information-label">
+              Full Name
+            </span>
+
+            <strong>
+              {{ accountName }}
+            </strong>
+
+          </div>
+
+
+          <!-- Email -->
+          <div class="information-item">
+
+            <span class="information-label">
+              Email Address
+            </span>
+
+            <strong>
+              {{ accountEmail }}
+            </strong>
+
+          </div>
+
+
+          <!-- Phone -->
+          <div class="information-item">
+
+            <span class="information-label">
+              Phone Number
+            </span>
+
+            <strong>
+              {{ phone }}
+            </strong>
+
+          </div>
+
+
+          <!-- Department -->
+          <div class="information-item">
+
+            <span class="information-label">
+              Department
+            </span>
+
+            <strong>
+              {{ accountDepartment }}
+            </strong>
+
+          </div>
+
+
+          <!-- Position -->
+          <div class="information-item">
+
+            <span class="information-label">
+              Position
+            </span>
+
+            <strong>
+              {{ position }}
+            </strong>
+
+          </div>
+
+
+          <!-- Role -->
+          <div class="information-item">
+
+            <span class="information-label">
+              Account Role
+            </span>
+
+            <span class="role-badge">
+              {{ roleLabel }}
+            </span>
+
+          </div>
+
+
+          <!-- Joining Date -->
+          <div class="information-item">
+
+            <span class="information-label">
+              Joining Date
+            </span>
+
+            <strong>
+              @if (joiningDate) {
+                {{ joiningDate | date:'dd MMM yyyy' }}
+              } @else {
+                Not Available
+              }
+            </strong>
+
+          </div>
+
+
+          <!-- Salary -->
+          <div class="information-item">
+
+            <span class="information-label">
+              Salary
+            </span>
+
+            <strong>
+              @if (salary > 0) {
+                {{ salary | currency:'INR':'symbol':'1.0-0' }}
+              } @else {
+                Not Available
+              }
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    }
+
+
+    <!-- Account Security -->
+    <div class="security-section">
+
+      <div class="section-title">
+
+        <div class="section-icon security-icon">
+          🔐
+        </div>
+
+        <div>
+          <h3>Account Security</h3>
+          <p>Manage your account access</p>
+        </div>
+
+      </div>
+
+
+      <div class="security-card">
+
+        <div class="security-info">
+
+          <div class="security-symbol">
+            🔒
+          </div>
+
+          <div>
+
+            <h4>Password</h4>
+
+            <p>
+              Your password is securely managed by the
+              EmployX authentication system.
+            </p>
+
+          </div>
+
+        </div>
+
+        <span class="security-status">
+          Protected
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- Logout Section -->
+    <div class="logout-section">
+
+      <div class="logout-content">
+
+        <div class="logout-icon">
+          ↪
+        </div>
+
+        <div>
+
+          <h3>Sign out of EmployX</h3>
+
+          <p>
+            Sign out of your current account on this device.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="logout-btn"
+        (click)="logout()"
+      >
+        Logout
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

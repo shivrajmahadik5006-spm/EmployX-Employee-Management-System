@@ -1,0 +1,431 @@
+
+:host {
+  display: block;
+  color: #172b4d;
+}
+
+.leave-page {
+  padding: 28px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.eyebrow {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin: 0 0 8px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  margin: 0;
+  color: #172b4d;
+}
+
+.subtitle,
+.section-heading p {
+  color: #718096;
+  font-size: 14px;
+  margin: 8px 0 0;
+}
+
+.role-badge {
+  background: #e8efff;
+  color: #254c9c;
+  padding: 9px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.alert {
+  padding: 14px 18px;
+  border-radius: 9px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.success {
+  background: #e8f8ef;
+  color: #187044;
+  border: 1px solid #b8e8cc;
+}
+
+.error {
+  background: #fff0f0;
+  color: #b42318;
+  border: 1px solid #ffd0d0;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: #fff;
+  border: 1px solid #e8edf4;
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 3px 12px rgba(20, 40, 80, 0.04);
+}
+
+.summary-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.blue {
+  background: #e9efff;
+  color: #3159b7;
+}
+
+.orange {
+  background: #fff2df;
+  color: #c77714;
+}
+
+.green {
+  background: #e4f8ec;
+  color: #17834c;
+}
+
+.red {
+  background: #ffebeb;
+  color: #c52c37;
+}
+
+.summary-card p {
+  margin: 0 0 8px;
+  color: #718096;
+  font-size: 13px;
+}
+
+.summary-card h2 {
+  margin: 0;
+  font-size: 25px;
+  color: #172b4d;
+}
+
+.leave-card {
+  background: #fff;
+  border: 1px solid #e7edf5;
+  border-radius: 13px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 16px rgba(20, 40, 80, 0.04);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.section-heading h2 {
+  font-size: 19px;
+  margin: 0;
+  color: #172b4d;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #344563;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.review-cell input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dce3ed;
+  border-radius: 7px;
+  padding: 11px 12px;
+  color: #243653;
+  background: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.review-cell input:focus {
+  border-color: #3159b7;
+  box-shadow: 0 0 0 3px rgba(49, 89, 183, 0.1);
+}
+
+.form-group input[readonly],
+.form-group input[readonly]:focus {
+  background: #f5f7fa;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #edf0f5;
+}
+
+.form-footer p {
+  font-size: 13px;
+  color: #718096;
+}
+
+.form-footer strong {
+  color: #172b4d;
+}
+
+.primary-btn,
+.approve-btn,
+.reject-btn {
+  border: 0;
+  border-radius: 7px;
+  padding: 10px 15px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-btn {
+  background: #254c9c;
+  color: #fff;
+  padding: 13px 20px;
+}
+
+.primary-btn:hover {
+  background: #193b80;
+}
+
+.primary-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+thead {
+  background: #f5f7fb;
+}
+
+th {
+  padding: 14px 12px;
+  color: #61718a;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #edf0f5;
+  color: #344563;
+  font-size: 12px;
+  vertical-align: top;
+}
+
+td strong {
+  display: block;
+  font-weight: 600;
+  color: #243653;
+}
+
+td small {
+  display: block;
+  margin-top: 5px;
+  color: #8793a6;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.reason-cell {
+  min-width: 130px;
+  max-width: 220px;
+  overflow-wrap: anywhere;
+}
+
+.status-badge {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-badge.pending {
+  background: #fff2dc;
+  color: #a96509;
+}
+
+.status-badge.approved {
+  background: #e2f7e9;
+  color: #187044;
+}
+
+.status-badge.rejected {
+  background: #ffe7e7;
+  color: #b42318;
+}
+
+.review-cell {
+  min-width: 150px;
+}
+
+.review-cell input {
+  margin-bottom: 9px;
+  font-size: 11px;
+}
+
+.review-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.approve-btn {
+  background: #e2f7e9;
+  color: #187044;
+}
+
+.reject-btn {
+  background: #ffe7e7;
+  color: #b42318;
+}
+
+.approve-btn:hover {
+  background: #c9efd7;
+}
+
+.reject-btn:hover {
+  background: #ffd4d4;
+}
+
+.reviewed-text {
+  color: #718096;
+  font-size: 12px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 45px 15px;
+  color: #718096;
+}
+
+.empty-state strong {
+  margin-top: 12px;
+}
+
+.empty-state p {
+  margin-bottom: 0;
+  font-size: 12px;
+}
+
+.empty-icon {
+  font-size: 28px;
+  color: #9aa8bd;
+}
+
+@media (max-width: 900px) {
+  .leave-page {
+    padding: 20px;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .leave-page {
+    padding: 14px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+  }
+
+  .page-header h1 {
+    font-size: 23px;
+  }
+
+  .summary-grid,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+
+  .leave-card {
+    padding: 17px;
+  }
+
+  .form-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .primary-btn {
+    width: 100%;
+  }
+}

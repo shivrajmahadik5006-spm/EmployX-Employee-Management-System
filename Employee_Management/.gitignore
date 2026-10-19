@@ -1,0 +1,114 @@
+
+# ==========================================
+# EmployX - Employee Management System
+# Root Git Ignore Configuration
+# ==========================================
+
+# ------------------------------------------
+# Angular frontend
+# ------------------------------------------
+Employee_Management/node_modules/
+Employee_Management/dist/
+Employee_Management/.angular/
+Employee_Management/coverage/
+
+# Angular build and test output
+**/node_modules/
+**/dist/
+**/out-tsc/
+**/coverage/
+**/.angular/cache/
+
+# ------------------------------------------
+# ASP.NET Core backend
+# ------------------------------------------
+**/bin/
+**/obj/
+
+# ------------------------------------------
+# Visual Studio
+# ------------------------------------------
+**/.vs/
+**/*.user
+**/*.suo
+**/*.csproj.user
+**/*.sln.docstates
+
+# ------------------------------------------
+# Visual Studio Code
+# ------------------------------------------
+Employee_Management/.vscode/*
+!Employee_Management/.vscode/settings.json
+!Employee_Management/.vscode/tasks.json
+!Employee_Management/.vscode/launch.json
+!Employee_Management/.vscode/extensions.json
+!Employee_Management/.vscode/mcp.json
+
+# ------------------------------------------
+# IDEs and editors
+# ------------------------------------------
+.idea/
+.history/
+*.sublime-workspace
+*.launch
+.settings/
+.project
+.classpath
+.c9/
+
+# ------------------------------------------
+# Environment variables and secrets
+# ------------------------------------------
+**/.env
+**/.env.*
+!**/.env.example
+**/secrets.json
+**/appsettings.Development.json
+**/appsettings.*.local.json
+**/secrets/
+
+# ------------------------------------------
+# Local databases and backups
+# ------------------------------------------
+**/*.mdf
+**/*.ldf
+**/*.bak
+**/*.sqlite
+**/*.sqlite3
+**/*.db
+
+# ------------------------------------------
+# Logs and temporary files
+# ------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+testem.log
+connect.lock
+*.tmp
+*.temp
+
+# ------------------------------------------
+# Operating system files
+# ------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ------------------------------------------
+# Miscellaneous generated files
+# ------------------------------------------
+/tmp/
+/out-tsc/
+/bazel-out/
+.sass-cache/
+typings/
+__screenshots__/
+
+# ------------------------------------------
+# Keep project source and migrations
+# ------------------------------------------
+# Do not ignore Angular src files.
+# Do not ignore ASP.NET Controllers, Models, Data,
+# or Entity Framework Migrations.

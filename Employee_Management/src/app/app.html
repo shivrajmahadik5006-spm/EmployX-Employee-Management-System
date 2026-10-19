@@ -1,0 +1,76 @@
+@if (showSidebar) {
+  <div class="app-container">
+
+    <aside class="sidebar">
+
+      <nav class="sidebar-nav">
+
+        <!-- Logo -->
+        <h2 class="logo">EmployX</h2>
+        <p class="subtitle">EMPLOYEE MANAGEMENT</p>
+
+        <!-- Everyone can access Dashboard -->
+        <a routerLink="/dashboard" routerLinkActive="active">
+          Dashboard
+        </a>
+
+        <!-- Admin and Manager only -->
+        @if (canManageEmployees) {
+          <a routerLink="/employees" routerLinkActive="active">
+            Employees
+          </a>
+        }
+
+        <!-- Admin only -->
+        @if (isAdmin) {
+          <a routerLink="/department" routerLinkActive="active">
+            Departments
+          </a>
+        }
+
+        <!-- All roles -->
+        <a routerLink="/attendance" routerLinkActive="active">
+          Attendance
+        </a>
+
+        <a routerLink="/leave" routerLinkActive="active">
+          Leave Management
+        </a>
+
+        <a routerLink="/payroll" routerLinkActive="active">
+          Payroll
+        </a>
+
+        <a routerLink="/announcements" routerLinkActive="active">
+          Announcements
+        </a>
+
+        <a routerLink="/performance" routerLinkActive="active">
+          Performance
+        </a>
+
+        <a routerLink="/tasks" routerLinkActive="active">
+          Tasks
+        </a>
+
+        <a routerLink="/notifications" routerLinkActive="active">
+          Notifications
+        </a>
+
+        <!-- Profile -->
+        <a routerLink="/profile" routerLinkActive="active">
+          My Profile
+        </a>
+
+      </nav>
+
+    </aside>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+} @else {
+  <router-outlet></router-outlet>
+}

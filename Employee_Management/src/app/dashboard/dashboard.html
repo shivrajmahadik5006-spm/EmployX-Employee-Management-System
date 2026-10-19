@@ -1,0 +1,696 @@
+<div class="dashboard-page">
+
+  <!-- ================================================= -->
+  <!-- HEADER -->
+  <!-- ================================================= -->
+
+  <header class="dashboard-header">
+
+    <div class="welcome-area">
+
+      <p class="eyebrow">
+        EMPLOYEE MANAGEMENT
+      </p>
+
+      <h1>
+        Dashboard
+      </h1>
+
+      <p class="welcome-text">
+        Welcome back,
+        <strong>{{ userName }}</strong>.
+        {{ welcomeMessage }}
+      </p>
+
+    </div>
+
+    <div class="header-right">
+
+      <div class="date-box">
+        <span class="date-icon">▣</span>
+
+        <div>
+          <small>Today</small>
+
+          <strong>
+            {{ today | date:'EEE, dd MMM yyyy' }}
+          </strong>
+        </div>
+      </div>
+
+      <a
+        routerLink="/profile"
+        class="user-profile">
+
+        <div class="user-avatar">
+          {{ initials || 'U' }}
+        </div>
+
+        <div class="user-details">
+
+          <strong>
+            {{ userName }}
+          </strong>
+
+          <span>
+            {{ userRole }}
+          </span>
+
+        </div>
+
+      </a>
+
+    </div>
+
+  </header>
+
+
+  <!-- ================================================= -->
+  <!-- OVERVIEW BANNER -->
+  <!-- ================================================= -->
+
+  <section class="overview-banner">
+
+    <div class="overview-content">
+
+      <div class="overview-icon">
+        ◈
+      </div>
+
+      <div>
+
+        <span class="overview-label">
+          {{ userRole }} Overview
+        </span>
+
+        <h2>
+          Everything you need in one place
+        </h2>
+
+        <p>
+          Monitor employees, review attendance,
+          manage requests and keep your organization
+          running smoothly.
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="overview-role">
+      {{ userRole }}
+    </div>
+
+  </section>
+
+
+  <!-- ================================================= -->
+  <!-- STATISTICS -->
+  <!-- ================================================= -->
+
+  <section class="stats-grid">
+
+    <!-- Total Employees -->
+
+    <div class="stat-card">
+
+      <div class="stat-top">
+
+        <div class="stat-icon employees-icon">
+          👥
+        </div>
+
+        <span class="stat-label">
+          Workforce
+        </span>
+
+      </div>
+
+      <div class="stat-number">
+        {{ totalEmployees }}
+      </div>
+
+      <div class="stat-bottom">
+
+        <strong>
+          Total Employees
+        </strong>
+
+        <span>
+          Registered employees
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- Active -->
+
+    <div class="stat-card">
+
+      <div class="stat-top">
+
+        <div class="stat-icon active-icon">
+          ✓
+        </div>
+
+        <span class="stat-label">
+          Status
+        </span>
+
+      </div>
+
+      <div class="stat-number">
+        {{ activeEmployees }}
+      </div>
+
+      <div class="stat-bottom">
+
+        <strong>
+          Active Employees
+        </strong>
+
+        <span class="positive">
+          Currently active
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- Inactive -->
+
+    <div class="stat-card">
+
+      <div class="stat-top">
+
+        <div class="stat-icon inactive-icon">
+          ○
+        </div>
+
+        <span class="stat-label">
+          Status
+        </span>
+
+      </div>
+
+      <div class="stat-number">
+        {{ inactiveEmployees }}
+      </div>
+
+      <div class="stat-bottom">
+
+        <strong>
+          Inactive Employees
+        </strong>
+
+        <span>
+          Currently inactive
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- Departments -->
+
+    <div class="stat-card">
+
+      <div class="stat-top">
+
+        <div class="stat-icon department-icon">
+          ▦
+        </div>
+
+        <span class="stat-label">
+          Organization
+        </span>
+
+      </div>
+
+      <div class="stat-number">
+        {{ departmentCount }}
+      </div>
+
+      <div class="stat-bottom">
+
+        <strong>
+          Departments
+        </strong>
+
+        <span>
+          Active departments
+        </span>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================================================= -->
+  <!-- MAIN GRID -->
+  <!-- ================================================= -->
+
+  <section class="main-grid">
+
+
+    <!-- ================================================= -->
+    <!-- DEPARTMENT OVERVIEW -->
+    <!-- ================================================= -->
+
+    <div class="dashboard-card department-card">
+
+      <div class="card-header">
+
+        <div>
+
+          <p class="card-eyebrow">
+            ORGANIZATION
+          </p>
+
+          <h2>
+            Department Overview
+          </h2>
+
+        </div>
+
+        @if (isAdmin) {
+
+          <a
+            routerLink="/department"
+            class="view-link">
+
+            View all →
+
+          </a>
+
+        }
+
+      </div>
+
+
+      @if (departmentStats.length > 0) {
+
+        <div class="department-list">
+
+          @for (
+            department of departmentStats;
+            track department.name
+          ) {
+
+            <div class="department-row">
+
+              <div class="department-info">
+
+                <div class="department-name">
+                  {{ department.name }}
+                </div>
+
+                <div class="department-count">
+                  {{ department.count }}
+                  employee{{ department.count !== 1 ? 's' : '' }}
+                </div>
+
+              </div>
+
+              <div class="department-progress">
+
+                <div
+                  class="progress-track">
+
+                  <div
+                    class="progress-bar"
+                    [style.width.%]="department.percentage">
+                  </div>
+
+                </div>
+
+                <span>
+                  {{ department.percentage }}%
+                </span>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      } @else {
+
+        <div class="empty-state">
+
+          <div class="empty-icon">
+            ▦
+          </div>
+
+          <h3>
+            No departments yet
+          </h3>
+
+          <p>
+            Add employees to see department
+            statistics here.
+          </p>
+
+        </div>
+
+      }
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- QUICK ACTIONS -->
+    <!-- ================================================= -->
+
+    <div class="dashboard-card actions-card">
+
+      <div class="card-header">
+
+        <div>
+
+          <p class="card-eyebrow">
+            QUICK ACCESS
+          </p>
+
+          <h2>
+            Quick Actions
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div class="action-list">
+
+        @if (isAdmin || isManager) {
+
+          <a
+            routerLink="/employees"
+            class="action-item">
+
+            <div class="action-icon employee-action">
+              👥
+            </div>
+
+            <div class="action-content">
+
+              <strong>
+                Employee Directory
+              </strong>
+
+              <span>
+                View and manage employees
+              </span>
+
+            </div>
+
+            <span class="arrow">
+              →
+            </span>
+
+          </a>
+
+        }
+
+
+        <a
+          routerLink="/attendance"
+          class="action-item">
+
+          <div class="action-icon attendance-action">
+            ◷
+          </div>
+
+          <div class="action-content">
+
+            <strong>
+              Attendance
+            </strong>
+
+            <span>
+              Review attendance records
+            </span>
+
+          </div>
+
+          <span class="arrow">
+            →
+          </span>
+
+        </a>
+
+
+        <a
+          routerLink="/leave"
+          class="action-item">
+
+          <div class="action-icon leave-action">
+            ◫
+          </div>
+
+          <div class="action-content">
+
+            <strong>
+              Leave Management
+            </strong>
+
+            <span>
+              Manage leave requests
+            </span>
+
+          </div>
+
+          <span class="arrow">
+            →
+          </span>
+
+        </a>
+
+
+        <a
+          routerLink="/profile"
+          class="action-item">
+
+          <div class="action-icon profile-action">
+            ◉
+          </div>
+
+          <div class="action-content">
+
+            <strong>
+              My Profile
+            </strong>
+
+            <span>
+              View your information
+            </span>
+
+          </div>
+
+          <span class="arrow">
+            →
+          </span>
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================================================= -->
+  <!-- RECENT EMPLOYEES -->
+  <!-- ================================================= -->
+
+  <section class="dashboard-card recent-card">
+
+    <div class="card-header">
+
+      <div>
+
+        <p class="card-eyebrow">
+          WORKFORCE
+        </p>
+
+        <h2>
+          Recent Employees
+        </h2>
+
+        <p class="card-description">
+          Employees recently added to the organization.
+        </p>
+
+      </div>
+
+      @if (isAdmin || isManager) {
+
+        <a
+          routerLink="/employees"
+          class="outline-button">
+
+          View Employees
+
+        </a>
+
+      }
+
+    </div>
+
+
+    @if (recentEmployees.length > 0) {
+
+      <div class="employee-table">
+
+        <div class="table-header">
+
+          <span>
+            Employee
+          </span>
+
+          <span>
+            Department
+          </span>
+
+          <span>
+            Position
+          </span>
+
+          <span>
+            Status
+          </span>
+
+        </div>
+
+
+        @for (
+          employee of recentEmployees;
+          track employee.id
+        ) {
+
+          <div class="employee-row">
+
+            <div class="employee-cell">
+
+              <div class="employee-avatar">
+
+                {{
+                  employee.name
+                    .split(' ')
+                    .map(n => n.charAt(0))
+                    .slice(0, 2)
+                    .join('')
+                    .toUpperCase()
+                }}
+
+              </div>
+
+              <div>
+
+                <strong>
+                  {{ employee.name }}
+                </strong>
+
+                <span>
+                  {{ employee.email }}
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="table-value">
+              {{ employee.department }}
+            </div>
+
+
+            <div class="table-value">
+              {{ employee.position }}
+            </div>
+
+
+            <div>
+
+              <span
+                class="status"
+                [class.inactive-status]="
+                  employee.status === 'Inactive'
+                ">
+
+                <span class="status-dot"></span>
+
+                {{ employee.status }}
+
+              </span>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    } @else {
+
+      <div class="empty-state recent-empty">
+
+        <div class="empty-icon">
+          👥
+        </div>
+
+        <h3>
+          No employees found
+        </h3>
+
+        <p>
+          Employees added to the system will appear here.
+        </p>
+
+        @if (isAdmin || isManager) {
+
+          <a
+            routerLink="/employees"
+            class="primary-button">
+
+            Add Employee
+
+          </a>
+
+        }
+
+      </div>
+
+    }
+
+  </section>
+
+
+  <!-- ================================================= -->
+  <!-- FOOTER -->
+  <!-- ================================================= -->
+
+  <div class="dashboard-footer">
+
+    <span>
+      EmployX Employee Management System
+    </span>
+
+    <span>
+      {{ today | date:'yyyy' }}
+    </span>
+
+  </div>
+
+</div>

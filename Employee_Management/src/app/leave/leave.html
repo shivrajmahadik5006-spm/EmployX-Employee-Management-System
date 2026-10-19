@@ -1,0 +1,321 @@
+
+<div class="leave-page">
+
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">EMPLOYEE MANAGEMENT</p>
+      <h1>Leave Management</h1>
+      <p class="subtitle">
+        Apply for leave and track application status.
+      </p>
+    </div>
+
+    <span class="role-badge">
+      {{ currentUser.role | titlecase }}
+    </span>
+  </header>
+
+  @if (successMessage) {
+    <div class="alert success">
+      ✓ {{ successMessage }}
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="alert error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <section class="summary-grid">
+
+    @if (isReviewer) {
+      <article class="summary-card">
+        <div class="summary-icon blue">▤</div>
+        <div>
+          <p>Total Requests</p>
+          <h2>{{ requests.length }}</h2>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon orange">◷</div>
+        <div>
+          <p>Pending Reviews</p>
+          <h2>{{ pendingReviewCount }}</h2>
+        </div>
+      </article>
+    } @else {
+      <article class="summary-card">
+        <div class="summary-icon orange">◷</div>
+        <div>
+          <p>Pending</p>
+          <h2>{{ pendingCount }}</h2>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon green">✓</div>
+        <div>
+          <p>Approved</p>
+          <h2>{{ approvedCount }}</h2>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon red">×</div>
+        <div>
+          <p>Rejected</p>
+          <h2>{{ rejectedCount }}</h2>
+        </div>
+      </article>
+    }
+
+  </section>
+
+  @if (!isReviewer) {
+    <section class="leave-card">
+      <div class="section-heading">
+        <div>
+          <h2>Apply for Leave</h2>
+          <p>Complete the form to submit your application.</p>
+        </div>
+      </div>
+
+      <form (ngSubmit)="submitLeave()" #leaveForm="ngForm">
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label>Employee Name</label>
+            <input
+              type="text"
+              [value]="currentUser.name"
+              readonly>
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <input
+              type="email"
+              [value]="currentUser.email"
+              readonly>
+          </div>
+
+          <div class="form-group">
+            <label for="leaveType">Leave Type</label>
+            <select
+              id="leaveType"
+              name="leaveType"
+              [(ngModel)]="leaveType"
+              required>
+              <option value="Casual Leave">Casual Leave</option>
+              <option value="Sick Leave">Sick Leave</option>
+              <option value="Earned Leave">Earned Leave</option>
+              <option value="Personal Leave">Personal Leave</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="duration">Duration</label>
+            <select
+              id="duration"
+              name="duration"
+              [(ngModel)]="duration"
+              (ngModelChange)="onDurationChange()"
+              required>
+              <option value="Full Day">Full Day</option>
+              <option value="Half Day">Half Day</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="startDate">Start Date</label>
+            <input
+              id="startDate"
+              type="date"
+              name="startDate"
+              [(ngModel)]="startDate"
+              [min]="today"
+              (ngModelChange)="onStartDateChange()"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="endDate">End Date</label>
+            <input
+              id="endDate"
+              type="date"
+              name="endDate"
+              [(ngModel)]="endDate"
+              [min]="startDate || today"
+              [max]="duration === 'Half Day' ? startDate : null"
+              [readonly]="duration === 'Half Day'"
+              required>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="reason">Reason for Leave</label>
+            <textarea
+              id="reason"
+              name="reason"
+              [(ngModel)]="reason"
+              rows="4"
+              maxlength="500"
+              placeholder="Explain why you need leave..."
+              required></textarea>
+          </div>
+
+        </div>
+
+        <div class="form-footer">
+          <p>
+            Requested duration:
+            <strong>{{ calculateDays() }} day(s)</strong>
+          </p>
+
+          <button
+            type="submit"
+            class="primary-btn"
+            [disabled]="leaveForm.invalid">
+            Submit Application
+          </button>
+        </div>
+
+      </form>
+    </section>
+  }
+
+  <section class="leave-card history-card">
+    <div class="section-heading">
+      <div>
+        <h2>
+          {{ isReviewer ? 'Leave Requests' : 'My Leave History' }}
+        </h2>
+        <p>
+          {{
+            isReviewer
+              ? 'Review employee applications below.'
+              : 'View your application status and manager comments.'
+          }}
+        </p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            @if (isReviewer) {
+              <th>Employee</th>
+            }
+            <th>Leave Type</th>
+            <th>Dates</th>
+            <th>Duration</th>
+            <th>Reason</th>
+            <th>Status</th>
+            @if (isReviewer) {
+              <th>Review Action</th>
+            }
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (request of visibleRequests; track request.id) {
+            <tr>
+              @if (isReviewer) {
+                <td>
+                  <strong>{{ request.employeeName }}</strong>
+                  <small>{{ request.employeeEmail }}</small>
+                </td>
+              }
+
+              <td>{{ request.leaveType }}</td>
+
+              <td>
+                <strong>{{ request.startDate | date:'dd MMM yyyy' }}</strong>
+                @if (request.endDate !== request.startDate) {
+                  <small>
+                    to {{ request.endDate | date:'dd MMM yyyy' }}
+                  </small>
+                }
+              </td>
+
+              <td>
+                {{ request.duration }}
+                <small>{{ request.days }} day(s)</small>
+              </td>
+
+              <td class="reason-cell">{{ request.reason }}</td>
+
+              <td>
+                <span
+                  class="status-badge"
+                  [class.pending]="request.status === 'Pending'"
+                  [class.approved]="request.status === 'Approved'"
+                  [class.rejected]="request.status === 'Rejected'">
+                  {{ request.status }}
+                </span>
+
+                @if (request.reviewedBy) {
+                  <small>By {{ request.reviewedBy }}</small>
+                }
+
+                @if (request.reviewComment) {
+                  <small>{{ request.reviewComment }}</small>
+                }
+              </td>
+
+              @if (isReviewer) {
+                <td class="review-cell">
+                  @if (request.status === 'Pending') {
+                    <input
+                      type="text"
+                      [name]="'comment-' + request.id"
+                      [(ngModel)]="reviewComments[request.id]"
+                      placeholder="Optional comment">
+
+                    <div class="review-buttons">
+                      <button
+                        type="button"
+                        class="approve-btn"
+                        (click)="reviewLeave(request, 'Approved')">
+                        Approve
+                      </button>
+
+                      <button
+                        type="button"
+                        class="reject-btn"
+                        (click)="reviewLeave(request, 'Rejected')">
+                        Reject
+                      </button>
+                    </div>
+                  } @else {
+                    <span class="reviewed-text">Reviewed</span>
+                  }
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td
+                [attr.colspan]="isReviewer ? 7 : 5"
+                class="empty-state">
+                <div class="empty-icon">▤</div>
+                <strong>No leave requests found</strong>
+                <p>
+                  {{
+                    isReviewer
+                      ? 'Employee applications will appear here.'
+                      : 'Your submitted applications will appear here.'
+                  }}
+                </p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>

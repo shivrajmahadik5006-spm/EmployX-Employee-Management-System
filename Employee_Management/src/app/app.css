@@ -1,0 +1,150 @@
+
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6fb;
+  color: #17233c;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  padding: 28px 18px;
+  background: #101c35;
+  color: white;
+  box-sizing: border-box;
+
+  /* Keep logout at the bottom */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Logo */
+.logo {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.subtitle {
+  margin-bottom: 35px;
+  color: #9ba9c4;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+/* Navigation */
+.sidebar-nav {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  /* Navigation uses available space */
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-nav a {
+  padding: 13px 15px;
+  border-radius: 8px;
+  color: #c5cfe1;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background: #263c63;
+  color: white;
+}
+
+/* Logout section */
+.sidebar-bottom {
+  position: fixed;
+  bottom: 0;
+  margin-top: auto;
+  padding-top: 20px;
+  flex-shrink: 0;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 15px;
+
+  background: transparent;
+  color: #c5cfe1;
+  border: 1px solid #34435e;
+  border-radius: 8px;
+
+  font-size: 15px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+.logout-btn span {
+  font-size: 20px;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 30px;
+}
+
+/* Responsive design */
+@media (max-width: 700px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    padding: 20px 18px;
+  }
+
+  .subtitle {
+    margin-bottom: 20px;
+  }
+
+  .sidebar-nav {
+    flex: initial;
+    overflow-y: visible;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .sidebar-bottom {
+    margin-top: 20px;
+    padding-top: 12px;
+    border-top: 1px solid #34435e;
+  }
+
+  .logout-btn {
+    width: 100%;
+  }
+
+  .main-content {
+    padding: 18px;
+  }
+}

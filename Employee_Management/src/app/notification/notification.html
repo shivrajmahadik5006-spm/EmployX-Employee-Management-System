@@ -1,0 +1,125 @@
+
+<div class="notifications-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">EMPLOYX / NOTIFICATIONS</p>
+      <h1>Notification Center</h1>
+      <p class="subtitle">
+        Hello {{ currentUserName }}, here are your latest updates.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="addTestNotification()">
+        + Test Notification
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="clearReadNotifications()"
+        [disabled]="notifications.length === unreadCount">
+        Clear read
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="markAllAsRead()"
+        [disabled]="unreadCount === 0">
+        Mark all as read
+      </button>
+    </div>
+  </div>
+
+  <div class="summary-card">
+    <div class="summary-icon">♧</div>
+    <div>
+      <h2>{{ unreadCount }} unread notifications</h2>
+      <p>You have {{ notifications.length }} notifications in total.</p>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <button
+      *ngFor="let filter of filters"
+      type="button"
+      class="filter-btn"
+      [class.active]="activeFilter === filter"
+      (click)="setFilter(filter)">
+      {{ filter }}
+      <span *ngIf="filter === 'Unread'">({{ unreadCount }})</span>
+    </button>
+  </div>
+
+  <div
+    class="notification-list"
+    *ngIf="filteredNotifications.length > 0">
+
+    <article
+      class="notification-card"
+      *ngFor="let item of filteredNotifications"
+      [class.unread]="!item.isRead">
+
+      <div class="type-icon" [attr.data-type]="item.type">
+        {{ getIcon(item.type) }}
+      </div>
+
+      <div class="notification-content">
+        <div class="notification-heading">
+          <h3>{{ item.title }}</h3>
+          <span class="unread-dot" *ngIf="!item.isRead"></span>
+        </div>
+
+        <p>{{ item.message }}</p>
+
+        <div class="notification-meta">
+          <span class="type-label">{{ item.type }}</span>
+          <span>{{ item.createdAt | date:'medium' }}</span>
+        </div>
+      </div>
+
+      <div class="notification-actions">
+        <button
+          *ngIf="!item.isRead"
+          type="button"
+          class="text-btn"
+          (click)="markAsRead(item)">
+          Mark read
+        </button>
+
+        <button
+          type="button"
+          class="delete-btn"
+          (click)="deleteNotification(item)"
+          aria-label="Delete notification">
+          ×
+        </button>
+      </div>
+    </article>
+  </div>
+
+  <div
+    class="empty-state"
+    *ngIf="filteredNotifications.length === 0">
+
+    <div class="empty-icon">♧</div>
+    <h2>No notifications found</h2>
+
+    <p>
+      There are no notifications in this category yet.
+      Click Test Notification above to create one.
+    </p>
+
+    <button
+      *ngIf="activeFilter !== 'All'"
+      type="button"
+      class="btn btn-outline"
+      (click)="setFilter('All')">
+      Show all notifications
+    </button>
+  </div>
+</div>

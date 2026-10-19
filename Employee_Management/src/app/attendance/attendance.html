@@ -1,0 +1,279 @@
+<!-- DAILY ATTENDANCE -->
+<section class="panel daily-attendance-panel">
+
+  <div class="panel-heading">
+    <div>
+      <h2>Daily Attendance</h2>
+      <p>
+        Mark your attendance for today.
+      </p>
+    </div>
+
+    <div class="current-date">
+      {{ todayDate | date:'dd MMM yyyy' }}
+    </div>
+  </div>
+
+  <!-- Employee Attendance Actions -->
+  @if (userRole === 'employee') {
+
+    <div class="attendance-card">
+
+      <div class="attendance-info">
+
+        <div class="attendance-status">
+          <span
+            class="status-dot"
+            [class.status-active]="todayRecord && !todayRecord.checkOut"
+            [class.status-complete]="todayRecord?.checkOut"
+          ></span>
+
+          <div>
+            <span class="status-label">Today's Status</span>
+
+            <strong>
+              {{ attendanceStatus }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="attendance-times">
+
+          <div class="time-box">
+            <span>Check In</span>
+
+            <strong>
+              {{ formatTime(todayRecord?.checkIn || null) }}
+            </strong>
+          </div>
+
+          <div class="time-box">
+            <span>Check Out</span>
+
+            <strong>
+              {{ formatTime(todayRecord?.checkOut || null) }}
+            </strong>
+          </div>
+
+          <div class="time-box">
+            <span>Working Hours</span>
+
+            <strong>
+              {{ workingDuration }}
+            </strong>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Check In -->
+      @if (!todayRecord) {
+
+        <button
+          type="button"
+          class="attendance-button check-in-button"
+          (click)="checkIn()"
+        >
+          ✓ Check In
+        </button>
+
+      }
+
+      <!-- Check Out -->
+      @if (todayRecord && !todayRecord.checkOut) {
+
+        <button
+          type="button"
+          class="attendance-button check-out-button"
+          (click)="checkOut()"
+        >
+          ↪ Check Out
+        </button>
+
+      }
+
+      <!-- Completed -->
+      @if (todayRecord?.checkOut) {
+
+        <div class="completed-message">
+          ✓ Attendance completed for today
+        </div>
+
+      }
+
+    </div>
+
+    <!-- Success Message -->
+    @if (message) {
+
+      <div class="success-message">
+        {{ message }}
+      </div>
+
+    }
+
+    <!-- Error Message -->
+    @if (errorMessage) {
+
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+
+    }
+
+  }
+
+  <!-- Manager/Admin information -->
+  @if (userRole === 'manager' || userRole === 'admin') {
+
+    <div class="manager-attendance-info">
+      <div class="manager-icon">📊</div>
+
+      <div>
+        <strong>Employee Attendance</strong>
+
+        <p>
+          You can view employee check-in, check-out and working hours
+          from the attendance history below.
+        </p>
+      </div>
+    </div>
+
+  }
+
+</section>
+
+
+<!-- ATTENDANCE HISTORY -->
+<section class="panel history-panel">
+
+  <div class="panel-heading history-heading">
+
+    <div>
+      <h2>
+        @if (userRole === 'manager' || userRole === 'admin') {
+          Employee Attendance History
+        } @else {
+          Attendance History
+        }
+      </h2>
+
+      <p>
+        @if (userRole === 'manager' || userRole === 'admin') {
+          View employee check-in times, check-out times and working hours.
+        } @else {
+          View your previous attendance records.
+        }
+      </p>
+    </div>
+
+    <span class="record-count">
+      {{ attendanceHistoryRecords.length }} Records
+    </span>
+
+  </div>
+
+
+  <div class="table-wrapper">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Employee</th>
+          <th>Check In</th>
+          <th>Check Out</th>
+          <th>Working Hours</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        @for (record of attendanceHistoryRecords; track record.id) {
+
+          <tr>
+
+            <td>
+              {{ record.date | date:'dd MMM yyyy' }}
+            </td>
+
+            <td>
+              {{ record.employee?.name || 'Unknown Employee' }}
+            </td>
+
+            <td>
+              {{ formatTime(record.checkIn) }}
+            </td>
+
+            <td>
+              {{ formatTime(record.checkOut) }}
+            </td>
+
+            <td class="duration-cell">
+              {{ getRecordDuration(record) }}
+            </td>
+
+            <td>
+
+              @if (record.checkOut) {
+
+                <span class="badge badge-complete">
+                  Completed
+                </span>
+
+              } @else {
+
+                <span class="badge badge-pending">
+                  In Progress
+                </span>
+
+              }
+
+            </td>
+
+          </tr>
+
+        } @empty {
+
+          <tr>
+
+            <td colspan="6" class="empty-state">
+
+              <div class="empty-icon">
+                📋
+              </div>
+
+              <strong>
+                No attendance records found
+              </strong>
+
+              <p>
+
+                @if (userRole === 'manager' || userRole === 'admin') {
+
+                  No employee attendance records are available.
+
+                } @else {
+
+                  Check in to create your first attendance record.
+
+                }
+
+              </p>
+
+            </td>
+
+          </tr>
+
+        }
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</section>

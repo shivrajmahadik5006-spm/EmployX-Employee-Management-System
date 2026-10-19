@@ -1,0 +1,895 @@
+<div class="tasks-page">
+
+  <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
+
+  <div class="page-header">
+
+    <div>
+
+      <p class="eyebrow">
+        WORK MANAGEMENT
+      </p>
+
+      <h1>
+        Task Management
+      </h1>
+
+      <p class="subtitle">
+
+        {{
+          canManage
+            ? 'Assign work, manage deadlines and track employee progress.'
+            : 'View your assigned tasks and update your progress.'
+        }}
+
+      </p>
+
+    </div>
+
+    <!-- Admin / Manager only -->
+
+    <button
+      *ngIf="canManage"
+      type="button"
+      class="primary-btn"
+      (click)="openCreateForm()">
+
+      + Assign New Task
+
+    </button>
+
+  </div>
+
+
+  <!-- =====================================================
+       ERROR MESSAGE
+       ===================================================== -->
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage">
+
+    {{ errorMessage }}
+
+  </div>
+
+
+  <!-- =====================================================
+       SUCCESS MESSAGE
+       ===================================================== -->
+
+  <div
+    class="success-message"
+    *ngIf="successMessage">
+
+    {{ successMessage }}
+
+  </div>
+
+
+  <!-- =====================================================
+       SUMMARY CARDS
+       ===================================================== -->
+
+  <div class="stats-grid">
+
+    <!-- Total -->
+
+    <div class="stat-card">
+
+      <div class="stat-icon blue">
+        ▤
+      </div>
+
+      <div>
+
+        <p>
+          Total Tasks
+        </p>
+
+        <h2>
+          {{ totalTasks }}
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <!-- Pending -->
+
+    <div class="stat-card">
+
+      <div class="stat-icon orange">
+        ◷
+      </div>
+
+      <div>
+
+        <p>
+          Pending
+        </p>
+
+        <h2>
+          {{ pendingCount }}
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <!-- In Progress -->
+
+    <div class="stat-card">
+
+      <div class="stat-icon purple">
+        ↻
+      </div>
+
+      <div>
+
+        <p>
+          In Progress
+        </p>
+
+        <h2>
+          {{ inProgressCount }}
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <!-- Completed -->
+
+    <div class="stat-card">
+
+      <div class="stat-icon green">
+        ✓
+      </div>
+
+      <div>
+
+        <p>
+          Completed
+        </p>
+
+        <h2>
+          {{ completedCount }}
+        </h2>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       OVERDUE
+       ===================================================== -->
+
+  <div
+    class="overdue-banner"
+    *ngIf="overdueCount > 0">
+
+    <span>
+      !
+    </span>
+
+    <div>
+
+      <strong>
+        {{ overdueCount }} overdue task(s)
+      </strong>
+
+      <p>
+        Some unfinished tasks have passed their due dates.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       SEARCH AND FILTERS
+       ===================================================== -->
+
+  <div class="toolbar">
+
+    <!-- Search -->
+
+    <div class="search-box">
+
+      <span>
+        ⌕
+      </span>
+
+     <input
+      type="text"
+      [(ngModel)]="searchText"
+      (ngModelChange)="onSearchChange()"
+      placeholder="Search tasks, employees or departments...">
+
+    </div>
+
+
+    <!-- Status -->
+
+    <select
+      [(ngModel)]="selectedStatus"
+      (ngModelChange)="onStatusChange()"
+      aria-label="Filter by status">
+
+      <option value="All">
+        All statuses
+      </option>
+
+      <option value="Pending">
+        Pending
+      </option>
+
+      <option value="In Progress">
+        In Progress
+      </option>
+
+      <option value="Completed">
+        Completed
+      </option>
+
+    </select>
+
+
+    <!-- Priority -->
+
+    <select
+      [(ngModel)]="selectedPriority"
+      (ngModelChange)="onPriorityChange()"
+      aria-label="Filter by priority">
+
+      <option value="All">
+        All priorities
+      </option>
+
+      <option value="High">
+        High priority
+      </option>
+
+      <option value="Medium">
+        Medium priority
+      </option>
+
+      <option value="Low">
+        Low priority
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <!-- =====================================================
+       TASK LIST HEADER
+       ===================================================== -->
+
+  <div class="list-heading">
+
+    <div>
+
+      <h2>
+
+        {{
+          canManage
+            ? 'All Tasks'
+            : 'My Tasks'
+        }}
+
+      </h2>
+
+      <p>
+
+        {{
+          canManage
+            ? 'Review assignments and monitor team progress.'
+            : 'View your assignments and update your progress.'
+        }}
+
+      </p>
+
+    </div>
+
+
+    <span class="record-count">
+
+      {{ visibleTasks.length }} tasks
+
+    </span>
+
+  </div>
+
+
+  <!-- =====================================================
+       LOADING
+       ===================================================== -->
+
+  <div
+    class="empty-state"
+    *ngIf="loading">
+
+    <div class="empty-icon">
+      ⟳
+    </div>
+
+    <h3>
+      Loading tasks...
+    </h3>
+
+    <p>
+      Please wait while your tasks are loaded.
+    </p>
+
+  </div>
+
+
+  <!-- =====================================================
+       TASK CARDS
+       ===================================================== -->
+
+  <div
+    class="tasks-grid"
+    *ngIf="!loading && visibleTasks.length > 0">
+
+    <article
+      class="task-card"
+      *ngFor="let task of visibleTasks">
+
+
+      <!-- =================================================
+           CARD HEADER
+           ================================================= -->
+
+      <div class="task-card-header">
+
+        <span
+          class="priority-badge"
+          [class.priority-high]="task.priority === 'High'"
+          [class.priority-medium]="task.priority === 'Medium'"
+          [class.priority-low]="task.priority === 'Low'">
+
+          {{ task.priority }} priority
+
+        </span>
+
+
+        <span
+          class="status-badge"
+          [class.status-pending]="task.status === 'Pending'"
+          [class.status-progress]="task.status === 'In Progress'"
+          [class.status-completed]="task.status === 'Completed'">
+
+          {{ task.status }}
+
+        </span>
+
+      </div>
+
+
+      <!-- =================================================
+           TITLE
+           ================================================= -->
+
+      <h3>
+        {{ task.title }}
+      </h3>
+
+
+      <!-- =================================================
+           DESCRIPTION
+           ================================================= -->
+
+      <p class="task-description">
+
+        {{ task.description }}
+
+      </p>
+
+
+      <!-- =================================================
+           ASSIGNEE
+           ================================================= -->
+
+      <div class="task-assignee">
+
+        <div class="employee-avatar">
+
+          {{
+            getEmployeeName(
+              task.assignedToEmployeeId
+            )
+            .charAt(0)
+            .toUpperCase()
+          }}
+
+        </div>
+
+
+        <div class="assignee-details">
+
+          <strong>
+
+            {{
+              getEmployeeName(
+                task.assignedToEmployeeId
+              )
+            }}
+
+          </strong>
+
+          <span>
+
+            {{
+              getEmployeeDepartment(
+                task.assignedToEmployeeId
+              )
+            }}
+
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           TASK META
+           ================================================= -->
+
+      <div class="task-meta">
+
+        <!-- Due date -->
+
+        <div>
+
+          <span class="meta-label">
+            Due date
+          </span>
+
+          <strong
+            [class.overdue-text]="isOverdue(task)">
+
+            {{
+              task.dueDate
+                | date:'dd MMM yyyy':'UTC'
+            }}
+
+          </strong>
+
+          <span
+            class="overdue-label"
+            *ngIf="isOverdue(task)">
+
+            Overdue
+
+          </span>
+
+        </div>
+
+
+        <!-- Assigned by -->
+
+        <div class="assigned-by">
+
+          <span class="meta-label">
+            Assigned by
+          </span>
+
+          <strong>
+
+            {{
+              task.assignedByEmployee?.name ||
+              'Unknown manager'
+            }}
+
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           STATUS UPDATE
+           ================================================= -->
+
+      <div class="status-editor">
+
+        <label
+          [for]="'status-' + task.id">
+
+          Update status
+
+        </label>
+
+
+        <select
+          [id]="'status-' + task.id"
+          [ngModel]="task.status"
+          (ngModelChange)="updateStatus(task, $event)"
+          [disabled]="task.status === 'Completed'"
+          aria-label="Update task status">
+
+          <option value="Pending">
+            Pending
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- =================================================
+           ADMIN / MANAGER ACTIONS
+           ================================================= -->
+
+      <div
+        class="task-actions"
+        *ngIf="canManage">
+
+        <button
+          type="button"
+          class="edit-btn"
+          (click)="editTask(task)">
+
+          Edit Task
+
+        </button>
+
+
+        <button
+          type="button"
+          class="delete-btn"
+          (click)="deleteTask(task)">
+
+          Delete
+
+        </button>
+
+      </div>
+
+    </article>
+
+  </div>
+
+
+  <!-- =====================================================
+       EMPTY STATE
+       ===================================================== -->
+
+  <div
+    class="empty-state"
+    *ngIf="!loading && visibleTasks.length === 0">
+
+    <div class="empty-icon">
+      ▤
+    </div>
+
+    <h3>
+      No tasks found
+    </h3>
+
+    <p>
+
+      {{
+        canManage
+          ? 'Assign a new task or adjust your filters.'
+          : 'Tasks assigned to you will appear here.'
+      }}
+
+    </p>
+
+
+    <button
+      *ngIf="canManage"
+      type="button"
+      class="primary-btn"
+      (click)="openCreateForm()">
+
+      + Assign First Task
+
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
+     CREATE / EDIT MODAL
+     ======================================================= -->
+
+<div
+  class="modal-backdrop"
+  *ngIf="showForm">
+
+  <div class="task-modal">
+
+
+    <!-- =================================================
+         MODAL HEADER
+         ================================================= -->
+
+    <div class="modal-header">
+
+      <div>
+
+        <p class="eyebrow">
+          WORK MANAGEMENT
+        </p>
+
+        <h2>
+
+          {{
+            editingId !== null
+              ? 'Edit Task'
+              : 'Assign New Task'
+          }}
+
+        </h2>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="close-btn"
+        (click)="closeForm()">
+
+        &times;
+
+      </button>
+
+    </div>
+
+
+    <!-- =================================================
+         FORM
+         ================================================= -->
+
+    <form
+      (ngSubmit)="saveTask()">
+
+
+      <!-- Title -->
+
+      <div class="form-group">
+
+        <label for="taskTitle">
+          Task title *
+        </label>
+
+        <input
+          id="taskTitle"
+          name="title"
+          type="text"
+          [(ngModel)]="formTitle"
+          placeholder="e.g. Complete monthly report"
+          required
+        />
+
+      </div>
+
+
+      <!-- Description -->
+
+      <div class="form-group">
+
+        <label for="taskDescription">
+          Description *
+        </label>
+
+        <textarea
+          id="taskDescription"
+          name="description"
+          [(ngModel)]="formDescription"
+          rows="3"
+          placeholder="Describe the task and expected outcome..."
+          required>
+        </textarea>
+
+      </div>
+
+
+      <!-- Employee -->
+
+      <div class="form-group">
+
+        <label for="assignee">
+          Assign to employee *
+        </label>
+
+        <select
+          id="assignee"
+          name="employeeId"
+          [(ngModel)]="formEmployeeId"
+          required>
+
+          <option
+            [ngValue]="0"
+            disabled>
+
+            Select employee
+
+          </option>
+
+
+          <option
+            *ngFor="let employee of employees"
+            [ngValue]="employee.id">
+
+            {{ employee.name }}
+
+            —
+
+            {{
+              employee.department?.name ||
+              'No Department'
+            }}
+
+          </option>
+
+        </select>
+
+
+        <p
+          class="field-hint"
+          *ngIf="employees.length === 0">
+
+          No employees found.
+          Add an employee before assigning tasks.
+
+        </p>
+
+      </div>
+
+
+      <!-- Priority + Date -->
+
+      <div class="form-row">
+
+
+        <!-- Priority -->
+
+        <div class="form-group">
+
+          <label for="priority">
+            Priority *
+          </label>
+
+          <select
+            id="priority"
+            name="priority"
+            [(ngModel)]="formPriority">
+
+            <option value="Low">
+              Low
+            </option>
+
+            <option value="Medium">
+              Medium
+            </option>
+
+            <option value="High">
+              High
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- Due date -->
+
+        <div class="form-group">
+
+          <label for="dueDate">
+            Due date *
+          </label>
+
+          <input
+            id="dueDate"
+            name="dueDate"
+            type="date"
+            [(ngModel)]="formDueDate"
+            [min]="localDateForInput"
+            required
+          />
+
+        </div>
+
+      </div>
+
+
+      <!-- Initial Status -->
+
+      <div class="form-group">
+
+        <label for="taskStatus">
+          Initial status
+        </label>
+
+        <select
+          id="taskStatus"
+          name="status"
+          [(ngModel)]="formStatus">
+
+          <option value="Pending">
+            Pending
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- Modal Actions -->
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="closeForm()">
+
+          Cancel
+
+        </button>
+
+
+        <button
+          type="submit"
+          class="primary-btn"
+          [disabled]="
+            saving ||
+            employees.length === 0
+          ">
+
+          {{
+            saving
+              ? 'Saving...'
+              : (
+                  editingId !== null
+                    ? 'Save Changes'
+                    : 'Assign Task'
+                )
+          }}
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
